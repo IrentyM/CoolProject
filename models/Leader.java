@@ -3,18 +3,16 @@ package models;
 public class Leader {
     private String name;
     private int militarySkill;
-    private int economicSkill;
-    private int diplomaticSkill;
+    private int economySkill;
+    private int diplomacySkill;
 
-    // Constructor
-    public Leader(String name, int militarySkill, int economicSkill, int diplomaticSkill) {
+    public Leader(String name, int militarySkill, int economySkill, int diplomacySkill) {
         this.name = name;
         this.militarySkill = militarySkill;
-        this.economicSkill = economicSkill;
-        this.diplomaticSkill = diplomaticSkill;
+        this.economySkill = economySkill;
+        this.diplomacySkill = diplomacySkill;
     }
 
-    // Getter methods
     public String getName() {
         return name;
     }
@@ -23,11 +21,12 @@ public class Leader {
         return militarySkill;
     }
 
-    public int getEconomicSkill() {
-        return economicSkill;
+    public int getEconomySkill() {
+        return economySkill;
     }
 
-    public int getDiplomaticSkill() {
-        return diplomaticSkill;
+    public int getDiplomacySkill() {
+        return diplomacySkill;
     }
 }
+
