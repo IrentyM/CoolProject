@@ -3,10 +3,13 @@ package models;
 public class Diplomacy {
     private int diplomacyPoints;
     private int opinion;
+    private Economy economy; // Reference to the Economy class
 
-    public Diplomacy(int diplomacyPoints) {
+    // Constructor that accepts an Economy object for managing money
+    public Diplomacy(int diplomacyPoints, Economy economy) {
         this.diplomacyPoints = diplomacyPoints;
         this.opinion = 0; // Default opinion value
+        this.economy = economy; // Link the Economy class to handle money transactions
     }
 
     // Getter for diplomacy points
@@ -48,16 +51,26 @@ public class Diplomacy {
 
     // Send a gift (increases opinion by spending money)
     public void sendGift(Country targetCountry, int amount) {
-        int opinionIncrease = amount / 10;
-        opinion += opinionIncrease; // Each 10 ducats increases opinion by 1
-        System.out.println("Gift sent to " + targetCountry.getName() + "! Opinion increased by " + opinionIncrease);
+        // Check if there is enough money to send the gift
+        if (economy.subtractMoney(amount)) {
+            int opinionIncrease = amount / 10; // Each 10 ducats increases opinion by 1
+            opinion += opinionIncrease;
+            System.out.println("Gift sent to " + targetCountry.getName() + "! Opinion increased by " + opinionIncrease);
+        } else {
+            System.out.println("Not enough money to send a gift!");
+        }
     }
 
-    // Humiliate the target country (decreases opinion)
+    // Humiliate the target country (decreases opinion by spending money)
     public void humiliate(Country targetCountry, int amount) {
-        int opinionDecrease = amount / 10;
-        opinion -= opinionDecrease; // Decrease opinion by 1 for each 10 ducats of insult
-        System.out.println("You humiliated " + targetCountry.getName() + "! Opinion decreased by " + opinionDecrease);
+        // Check if there is enough money to humiliate the target
+        if (economy.subtractMoney(amount)) {
+            int opinionDecrease = amount / 10; // Decrease opinion by 1 for each 10 ducats of insult
+            opinion -= opinionDecrease;
+            System.out.println("You humiliated " + targetCountry.getName() + "! Opinion decreased by " + opinionDecrease);
+        } else {
+            System.out.println("Not enough money to humiliate " + targetCountry.getName() + "!");
+        }
     }
 
     // Break an alliance (restores diplomacy points and decreases opinion)

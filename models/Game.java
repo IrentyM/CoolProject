@@ -38,23 +38,23 @@ public class Game {
 
         // Create Countries with Diplomacy, Economy, Military
         Country russia = new Country("Russian Empire",
-                new Diplomacy(3 + 8), new Economy(300, 3 + 7), new Military(1000,3+8), peterTheGreat, "Moscow");
+                new Diplomacy(11, new Economy(300, 10)),new Economy(300, 10), new Military(1000, 19), peterTheGreat, "Moscow");
         Country qing = new Country("Qing Dynasty",
-                new Diplomacy(3 + 7), new Economy(400,3 + 8), new Military(1100,3 + 7), yongzheng, "Beijing");
+                new Diplomacy(10, new Economy(400, 11)),new Economy(400, 11), new Military(1100, 17), yongzheng, "Beijing");
         Country zhungar = new Country("Zhungar Khanate",
-                new Diplomacy(3 + 3), new Economy(100,3 + 4), new Military(700,3 + 8), tsewangRabtan, "Ghulja");
+                new Diplomacy(6, new Economy(100, 7)),new Economy(100, 7), new Military(700, 11), tsewangRabtan, "Ghulja");
         Country xiva = new Country("Xiva Sultanate",
-                new Diplomacy(3 + 6), new Economy(100,3 + 5), new Military(200,3 + 5), sherGaziKhan, "Xiva");
+                new Diplomacy(9, new Economy(100, 8)),new Economy(100, 8), new Military(200, 8), sherGaziKhan, "Xiva");
         Country bukhara = new Country("Bukhara Sultanate",
-                new Diplomacy(3 + 4), new Economy(150,3 + 7), new Military(250,3 + 4), muhammadRahim, "Bukhara");
+                new Diplomacy(7, new Economy(150, 10)),new Economy(150, 10), new Military(250, 8), muhammadRahim, "Bukhara");
         Country kokand = new Country("Kokand Sultanate",
-                new Diplomacy(3 + 6), new Economy(100,3 + 6), new Military(200,3 + 3), abdurahimBey, "Kokand");
+                new Diplomacy(9, new Economy(100, 9)),new Economy(100, 9), new Military(200, 6), abdurahimBey, "Kokand");
         Country middleJuz = new Country("Middle Juz",
-                new Diplomacy(3 + 7), new Economy(100,3 + 6), new Military(450,3 + 5), shahMohammed, "Pavlodar");
+                new Diplomacy(9, new Economy(100, 9)),new Economy(100, 9), new Military(450, 8), shahMohammed, "Pavlodar");
         Country ulyJuz = new Country("Uly Juz",
-                new Diplomacy(3 + 5), new Economy(150,3 + 7), new Military(300,3 + 4), kartAbulkhair, "Shy");
+                new Diplomacy(8, new Economy(150, 10)),new Economy(150, 10), new Military(300, 7), kartAbulkhair, "Shy");
         Country kishiJuz = new Country("Kishi Juz",
-                new Diplomacy(3 + 4), new Economy(200,3 + 3), new Military(400,3 + 8), abulkhair, "Orenburg");
+                new Diplomacy(6, new Economy(200, 6)),new Economy(200, 6), new Military(400, 11), abulkhair, "Orenburg");
 
         // Add regions to each country with specific development levels
         addRegions(russia, new String[][]{
