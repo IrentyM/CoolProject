@@ -5,8 +5,9 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Game {
-    private List<Country> countries; // List of countries in the game
+    private ArrayList<Country> countries; // List of countries in the game
     private Scanner scanner; // Scanner for user input
+    private Country myCountry;
 
     public Game() {
         this.countries = new ArrayList<>();
@@ -207,25 +208,64 @@ public class Game {
             return regions;
 
     }
-
-    // Start the game loop
+    private Country chooseCountry(ArrayList<Country> countries) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Choose your country:");
+        displayCountries();
+        int choice = scanner.nextInt();
+        return countries.get(choice - 1);
+    }
     public void start() {
+        // Choose a country
+        myCountry = chooseCountry(countries);
+
+        // Display chosen country
+        System.out.println("You have chosen to play as: " + myCountry.getName());
+
+        // Show the menu
+        displayMenu();
+    }
+    // Start the game loop
+
+    private Country chooseTargetCountry() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Available countries for diplomatic interaction:");
+
+        // Exclude the chosen country from the diplomatic target list
+        ArrayList<Country> availableCountries = new ArrayList<>(countries);
+        availableCountries.remove(myCountry);
+
+        for (int i = 0; i < availableCountries.size(); i++) {
+            System.out.println((i + 1) + ". " + availableCountries.get(i).getName());
+        }
+
+        int choice = scanner.nextInt();
+        return availableCountries.get(choice - 1); // Return the chosen country for diplomacy
+    }
+    // Display main menu options
+    private void displayMenu() {
+        System.out.println("=== Game Menu ===");
+        System.out.println("1. Manage Economy");
+        System.out.println("2. Manage Military");
+        System.out.println("3. Manage Diplomacy");
+        System.out.println("0. Exit");
+        System.out.print("Enter your choice: ");
         boolean running = true;
+        int choice;
         while (running) {
-            displayCountries();
-            int countryIndex = getUserCountryChoice();
-            Country selectedCountry = countries.get(countryIndex);
-            displayMenu();
-            int choice = getUserChoice();
+
+            choice = scanner.nextInt();
             switch (choice) {
                 case 1:
-                    manageEconomy(selectedCountry);
+                    manageEconomy(myCountry);
                     break;
                 case 2:
-                    manageMilitary();
+                    manageMilitary(myCountry);
                     break;
                 case 3:
-                    manageDiplomacy();
+                    System.out.println("Choose a country to interact with diplomatically:");
+                    Country targetCountry = chooseTargetCountry();
+                    manageDiplomacy(myCountry,targetCountry);
                     break;
 
                 case 0:
@@ -238,65 +278,60 @@ public class Game {
         }
     }
 
-    // Display main menu options
-    private void displayMenu() {
-        System.out.println("=== Game Menu ===");
-        System.out.println("1. Manage Economy");
-        System.out.println("2. Manage Military");
-        System.out.println("3. Manage Diplomacy");
-        System.out.println("0. Exit");
-        System.out.print("Enter your choice: ");
-    }
-
     // Get user choice from input
     private int getUserChoice() {
         return scanner.nextInt();
     }
 
     // Manage economy for a specific country
-    private void manageEconomy(Country selectedCountry) {
+    private void manageEconomy(Country myCountry) {
         System.out.println("Manage Economy of a Country:");
 
-        selectedCountry.getEconomy().calculateIncome(); // Calculate income
-        System.out.println("Current Money: " + selectedCountry.getEconomy().getMoney() + " ducats");
+        myCountry.getEconomy().calculateIncome(); // Calculate income
+        System.out.println("Current Money: " + myCountry.getEconomy().getMoney() + " ducats");
     }
 
     // Manage military for a specific country
-    private void manageMilitary() {
-        System.out.println("Manage Military - Select a Country:");
-        displayCountries();
-        int countryIndex = getUserCountryChoice();
-        Country selectedCountry = countries.get(countryIndex);
+    private void manageMilitary(Country myCountry) {
+        System.out.println("Manage Military of a Country:");
         System.out.print("Enter number of recruits to add: ");
         int recruits = scanner.nextInt();
-        selectedCountry.getMilitary().recruitSoldiers(recruits); // Recruit soldiers
-        System.out.println("Total Soldiers: " + selectedCountry.getMilitary().getSoldiers());
+        myCountry.getMilitary().recruitSoldiers(recruits); // Recruit soldiers
+        System.out.println("Total Soldiers: " + myCountry.getMilitary().getSoldiers());
     }
 
     // Manage diplomacy for a specific country
-    private void manageDiplomacy() {
-        System.out.println("Manage Diplomacy - Select a Country:");
-        displayCountries();
-        int countryIndex = getUserCountryChoice();
-        Country selectedCountry = countries.get(countryIndex);
+    private void manageDiplomacy(Country myCountry, Country targetCountry) {
+        System.out.println("\nDiplomatic Actions with: " + targetCountry.getName());
+        System.out.println("Manage Diplomacy of a Country:");
         System.out.println("1. Form Alliance");
         System.out.println("2. Form Non-Aggression Pact");
+        System.out.println("3. Send Gift");
+        System.out.println("4. Humilate Country");
+        System.out.println("5. Break Alliance");
+        System.out.println("6. Declaining WAR");
         System.out.println("0. Back to Menu");
         int actionChoice = scanner.nextInt();
 
         if (actionChoice == 1) {
-            System.out.println("Select target country for Alliance:");
-            displayCountries();
-            int targetIndex = getUserCountryChoice();
-            Country targetCountry = countries.get(targetIndex);
-            selectedCountry.getDiplomacy().formAlliance(targetCountry); // Form alliance
+            myCountry.getDiplomacy().formAlliance(targetCountry); // Form alliance
+
         } else if (actionChoice == 2) {
-            System.out.println("Select target country for Non-Aggression Pact:");
-            displayCountries();
-            int targetIndex = getUserCountryChoice();
-            Country targetCountry = countries.get(targetIndex);
-            selectedCountry.getDiplomacy().formNonAggressionPact(targetCountry); // Form pact
-        }
+            myCountry.getDiplomacy().formNonAggressionPact(targetCountry);// Form pact
+        } else if (actionChoice == 3) {
+            System.out.println("How many money spent?");
+            int actionGift = scanner.nextInt();
+            myCountry.getDiplomacy().sendGift(targetCountry,actionGift);
+        }else if (actionChoice == 4) {
+            System.out.println("How many money spent?");
+            int actionHumilate = scanner.nextInt();
+            myCountry.getDiplomacy().humiliate(targetCountry,actionHumilate);
+        }else if (actionChoice == 5) {
+            myCountry.getDiplomacy().breakAlliance(targetCountry);
+        }else if (actionChoice == 6) {
+
+            myCountry.getDiplomacy().declareWar(targetCountry);}
+
     }
 
     // Display available countries

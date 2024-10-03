@@ -19,6 +19,7 @@ public class Country {
         this.relationshipManager = new RelationshipManager();
         this.diplomacy = new Diplomacy(3, economy); // Example diplomacy points initialization
         this.regions = regions;
+        this.relationshipManager = new RelationshipManager();
     }
 
     public String getName() {
