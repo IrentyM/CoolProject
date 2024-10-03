@@ -1,6 +1,6 @@
 package models;
 
-public class Leader {
+public class Leader implements ILeader {
     private String name;
     private int militarySkill;
     private int economySkill;
@@ -29,4 +29,3 @@ public class Leader {
         return diplomacySkill;
     }
 }
-
