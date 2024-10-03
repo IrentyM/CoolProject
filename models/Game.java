@@ -17,45 +17,209 @@ public class Game {
     // Initialize game state and countries
     private void initializeGame() {
         // Initialize leaders
-        ILeader peterI = new Leader("Peter I", 8, 7, 8);
-        ILeader yongzheng = new Leader("Yongzheng Emperor", 7, 8, 7);
-        ILeader tsewang = new Leader("Tsewang Rabtan", 8, 4, 3);
 
-        // Initialize regions
-        List<IRegion> russianRegions = new ArrayList<>();
-        russianRegions.add(new Region("Moscow", 3, "Moscow"));
+            // Initialize leaders
+            ILeader peterI = new Leader("Peter I", 8, 7, 8);
+            ILeader yongzheng = new Leader("Yongzheng Emperor", 7, 8, 7);
+            ILeader tsewang = new Leader("Tsewang Rabtan", 8, 4, 3);
+            ILeader shahMohammed = new Leader("Shah Mohammed", 5, 6, 7);
+            ILeader kartAbulkhair = new Leader("Kart-Abulkhair", 4, 7, 5);
+            ILeader abulkhair = new Leader("Abulkhair", 8, 3, 4);
+            ILeader sherGaziKhan = new Leader("Shergazi Khan", 5, 5, 6);
+            ILeader muhammadRahim = new Leader("Muhammad Rahim", 4, 7, 4);
+            ILeader abdurahimBey = new Leader("Abdurahim-bey", 3, 6, 6);
 
-        List<IRegion> qingRegions = new ArrayList<>();
-        qingRegions.add(new Region("Beijing", 4, "Beijing"));
+            // Initialize regions for each country
+            List<IRegion> russianRegions = createRussianRegions();
+            List<IRegion> qingRegions = createQingRegions();
+            List<IRegion> zhungarRegions = createZhungarRegions();
+            List<IRegion> middleJuzRegions = createMiddleJuzRegions();
+            List<IRegion> ulyJuzRegions = createUlyJuzRegions();
+            List<IRegion> kishiJuzRegions = createKishiJuzRegions();
+            List<IRegion> xivaRegions = createXivaRegions();
+            List<IRegion> bukharaRegions = createBukharaRegions();
+            List<IRegion> kokandRegions = createKokandRegions();
 
-        List<IRegion> zhungarRegions = new ArrayList<>();
-        zhungarRegions.add(new Region("Ghulja", 3, "Ghulja"));
+            // Initialize economies
+            IEconomy russianEconomy = new Economy(1000, russianRegions, peterI);
+            IEconomy qingEconomy = new Economy(1200, qingRegions, yongzheng);
+            IEconomy zhungarEconomy = new Economy(800, zhungarRegions, tsewang);
+            IEconomy middleJuzEconomy = new Economy(500, middleJuzRegions, shahMohammed);
+            IEconomy ulyJuzEconomy = new Economy(400, ulyJuzRegions, kartAbulkhair);
+            IEconomy kishiJuzEconomy = new Economy(300, kishiJuzRegions, abulkhair);
+            IEconomy xivaEconomy = new Economy(600, xivaRegions, sherGaziKhan);
+            IEconomy bukharaEconomy = new Economy(550, bukharaRegions, muhammadRahim);
+            IEconomy kokandEconomy = new Economy(500, kokandRegions, abdurahimBey);
 
-        // Initialize economies
-        IEconomy russianEconomy = new Economy(1000, russianRegions, peterI);
-        IEconomy qingEconomy = new Economy(1200, qingRegions, yongzheng);
-        IEconomy zhungarEconomy = new Economy(800, zhungarRegions, tsewang);
+            // Initialize militaries
+            IMilitary russianMilitary = new Military(500, 8); // Example values
+            IMilitary qingMilitary = new Military(600, 7);
+            IMilitary zhungarMilitary = new Military(300, 8);
+            IMilitary middleJuzMilitary = new Military(250, 5);
+            IMilitary ulyJuzMilitary = new Military(200, 4);
+            IMilitary kishiJuzMilitary = new Military(150, 8);
+            IMilitary xivaMilitary = new Military(100, 5);
+            IMilitary bukharaMilitary = new Military(80, 4);
+            IMilitary kokandMilitary = new Military(90, 3);
 
-        // Initialize militaries
-        IMilitary russianMilitary = new Military(500, 8); // Example values
-        IMilitary qingMilitary = new Military(600, 7);
-        IMilitary zhungarMilitary = new Military(300, 8);
+            // Initialize countries
+            countries.add(new Country("Russian Empire", peterI, russianEconomy, russianMilitary, russianRegions));
+            countries.add(new Country("Qing Dynasty", yongzheng, qingEconomy, qingMilitary, qingRegions));
+            countries.add(new Country("Zhungar Khanate", tsewang, zhungarEconomy, zhungarMilitary, zhungarRegions));
+            countries.add(new Country("Middle Juz", shahMohammed, middleJuzEconomy, middleJuzMilitary, middleJuzRegions));
+            countries.add(new Country("Uly Juz", kartAbulkhair, ulyJuzEconomy, ulyJuzMilitary, ulyJuzRegions));
+            countries.add(new Country("Kishi Juz", abulkhair, kishiJuzEconomy, kishiJuzMilitary, kishiJuzRegions));
+            countries.add(new Country("Xiva", sherGaziKhan, xivaEconomy, xivaMilitary, xivaRegions));
+            countries.add(new Country("Bukhara", muhammadRahim, bukharaEconomy, bukharaMilitary, bukharaRegions));
+            countries.add(new Country("Kokand", abdurahimBey, kokandEconomy, kokandMilitary, kokandRegions));
+        }
 
-        // Initialize countries
-        countries.add(new Country("Russian Empire", peterI, russianEconomy, russianMilitary, russianRegions));
-        countries.add(new Country("Qing Dynasty", yongzheng, qingEconomy, qingMilitary, qingRegions));
-        countries.add(new Country("Zhungar Khanate", tsewang, zhungarEconomy, zhungarMilitary, zhungarRegions));
+        // Create Russian regions
+        private List<IRegion> createRussianRegions() {
+            List<IRegion> regions = new ArrayList<>();
+            regions.add(new Region("Moscow", 3, "Moscow"));
+            regions.add(new Region("St. Petersburg", 3, "St. Petersburg"));
+            regions.add(new Region("Novgorod", 2, "Novgorod"));
+            regions.add(new Region("Kazan", 3, "Kazan"));
+            regions.add(new Region("Siberia", 2, "Siberia"));
+            regions.add(new Region("Astrakhan", 3, "Astrakhan"));
+            regions.add(new Region("Caucasus", 3, "Caucasus"));
+            regions.add(new Region("Tver", 3, "Tver"));
+            regions.add(new Region("Smolensk", 2, "Smolensk"));
+            regions.add(new Region("Vladimir", 2, "Vladimir"));
+            regions.add(new Region("Voronezh", 3, "Voronezh"));
+            regions.add(new Region("Tula", 2, "Tula"));
+            regions.add(new Region("Rostov", 2, "Rostov"));
+            regions.add(new Region("Saratov", 3, "Saratov"));
+            regions.add(new Region("Krasnoyarsk", 2, "Krasnoyarsk"));
+            regions.add(new Region("Irkutsk", 2, "Irkutsk"));
+            regions.add(new Region("Kamchatka", 1, "Kamchatka"));
+            regions.add(new Region("Chelyabinsk", 2, "Chelyabinsk"));
+            regions.add(new Region("Perm", 2, "Perm"));
+            regions.add(new Region("Kurgan", 2, "Kurgan"));
+            regions.add(new Region("Orenburg", 3, "Orenburg"));
+            return regions;
+        }
+
+        // Create Qing regions
+        private List<IRegion> createQingRegions() {
+            List<IRegion> regions = new ArrayList<>();
+            regions.add(new Region("Beijing", 4, "Beijing"));
+            regions.add(new Region("Shenyang", 4, "Shenyang"));
+            regions.add(new Region("Xi'an", 4, "Xi'an"));
+            regions.add(new Region("Hangzhou", 4, "Hangzhou"));
+            regions.add(new Region("Nanjing", 4, "Nanjing"));
+            regions.add(new Region("Chengdu", 4, "Chengdu"));
+            regions.add(new Region("Lanzhou", 3, "Lanzhou"));
+            regions.add(new Region("Urumqi", 3, "Urumqi"));
+            regions.add(new Region("Urumqi", 3, "Urumqi"));
+            regions.add(new Region("Urumqi", 3, "Urumqi"));
+            regions.add(new Region("Urumqi", 3, "Urumqi"));
+            regions.add(new Region("Urumqi", 3, "Urumqi"));
+            regions.add(new Region("Urumqi", 3, "Urumqi"));
+            regions.add(new Region("Urumqi", 3, "Urumqi"));
+            regions.add(new Region("Urumqi", 3, "Urumqi"));
+            return regions;
+        }
+
+        // Create Zhungar regions
+        private List<IRegion> createZhungarRegions() {
+            List<IRegion> regions = new ArrayList<>();
+            regions.add(new Region("Ghulja", 3, "Ghulja"));
+            regions.add(new Region("Uliastai", 3, "Uliastai"));
+            regions.add(new Region("Turfan", 3, "Turfan"));
+            regions.add(new Region("Kochkor-Ata", 2, "Kochkor-Ata"));
+            regions.add(new Region("Kochkor-Ata", 2, "Kochkor-Ata"));
+            regions.add(new Region("Kochkor-Ata", 2, "Kochkor-Ata"));
+            regions.add(new Region("Kochkor-Ata", 2, "Kochkor-Ata"));
+            regions.add(new Region("Kochkor-Ata", 2, "Kochkor-Ata"));
+            regions.add(new Region("Kochkor-Ata", 2, "Kochkor-Ata"));
+            regions.add(new Region("Kochkor-Ata", 2, "Kochkor-Ata"));
+            return regions;
+        }
+
+        // Create Middle Juz regions
+        private List<IRegion> createMiddleJuzRegions() {
+            List<IRegion> regions = new ArrayList<>();
+            regions.add(new Region("Pavlodar", 3, "Pavlodar"));
+            regions.add(new Region("Semey", 3, "Semey"));
+            regions.add(new Region("Ekibastuz", 3, "Ekibastuz"));
+            regions.add(new Region("Aqmola", 3, "Aqmola"));
+            regions.add(new Region("Aqmola", 3, "Aqmola"));
+            regions.add(new Region("Aqmola", 3, "Aqmola"));
+            regions.add(new Region("Aqmola", 3, "Aqmola"));
+
+            // Add more regions as needed
+            return regions;
+        }
+
+        // Create Uly Juz regions
+        private List<IRegion> createUlyJuzRegions() {
+            List<IRegion> regions = new ArrayList<>();
+            regions.add(new Region("Shy", 4, "Shy"));
+            regions.add(new Region("Taldykorgan", 4, "Taldykorgan"));
+            regions.add(new Region("Taldykorgan", 4, "Taldykorgan"));
+            regions.add(new Region("Taldykorgan", 4, "Taldykorgan"));
+            // Add more regions as needed
+            return regions;
+        }
+
+        // Create Kishi Juz regions
+        private List<IRegion> createKishiJuzRegions() {
+            List<IRegion> regions = new ArrayList<>();
+            regions.add(new Region("Orenburg", 2, "Orenburg"));
+            regions.add(new Region("Orenburg", 2, "Orenburg"));
+            regions.add(new Region("Orenburg", 2, "Orenburg"));
+            regions.add(new Region("Orenburg", 2, "Orenburg"));
+            regions.add(new Region("Orenburg", 2, "Orenburg"));
+            // Add more regions as needed
+            return regions;
+        }
+
+        // Create Xiva regions
+        private List<IRegion> createXivaRegions() {
+            List<IRegion> regions = new ArrayList<>();
+            regions.add(new Region("Xiva", 4, "Xiva"));
+            regions.add(new Region("Xiva", 4, "Xiva"));
+            regions.add(new Region("Xiva", 4, "Xiva"));
+            // Add more regions as needed
+            return regions;
+        }
+
+        // Create Bukhara regions
+        private List<IRegion> createBukharaRegions() {
+            List<IRegion> regions = new ArrayList<>();
+            regions.add(new Region("Bukhara", 5, "Bukhara"));
+            regions.add(new Region("Bukhara", 5, "Bukhara"));
+
+            // Add more regions as needed
+            return regions;
+        }
+
+        // Create Kokand regions
+        private List<IRegion> createKokandRegions() {
+            List<IRegion> regions = new ArrayList<>();
+            regions.add(new Region("Kokand", 4, "Kokand"));
+            regions.add(new Region("Kokand", 4, "Kokand"));
+            regions.add(new Region("Kokand", 4, "Kokand"));
+
+            // Add more regions as needed
+            return regions;
+
     }
 
     // Start the game loop
     public void start() {
         boolean running = true;
         while (running) {
+            displayCountries();
+            int countryIndex = getUserCountryChoice();
+            Country selectedCountry = countries.get(countryIndex);
             displayMenu();
             int choice = getUserChoice();
             switch (choice) {
                 case 1:
-                    manageEconomy();
+                    manageEconomy(selectedCountry);
                     break;
                 case 2:
                     manageMilitary();
@@ -63,6 +227,7 @@ public class Game {
                 case 3:
                     manageDiplomacy();
                     break;
+
                 case 0:
                     running = false;
                     System.out.println("Exiting the game. Goodbye!");
@@ -89,11 +254,9 @@ public class Game {
     }
 
     // Manage economy for a specific country
-    private void manageEconomy() {
-        System.out.println("Manage Economy - Select a Country:");
-        displayCountries();
-        int countryIndex = getUserCountryChoice();
-        Country selectedCountry = countries.get(countryIndex);
+    private void manageEconomy(Country selectedCountry) {
+        System.out.println("Manage Economy of a Country:");
+
         selectedCountry.getEconomy().calculateIncome(); // Calculate income
         System.out.println("Current Money: " + selectedCountry.getEconomy().getMoney() + " ducats");
     }

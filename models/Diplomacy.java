@@ -55,15 +55,25 @@ public class Diplomacy implements IDiplomacy {
     }
 
     public void sendGift(Country targetCountry, int amount) {
+        // Check if there is enough money to send the gift
         if (economy.subtractMoney(amount)) {
-            opinion += 10; // Increase opinion with gifts
-            System.out.println("Gift of " + amount + " ducats sent to " + targetCountry.getName() + ".");
+            int opinionIncrease = amount / 10; // Each 10 ducats increases opinion by 1
+            opinion += opinionIncrease;
+            System.out.println("Gift sent to " + targetCountry.getName() + "! Opinion increased by " + opinionIncrease);
+        } else {
+            System.out.println("Not enough money to send a gift!");
         }
     }
 
     public void humiliate(Country targetCountry, int amount) {
-        opinion -= 30; // Decrease opinion due to humiliation
-        System.out.println("Humiliated " + targetCountry.getName() + ". Opinion decreased.");
+        // Check if there is enough money to humiliate the target
+        if (economy.subtractMoney(amount)) {
+            int opinionDecrease = amount / 10; // Decrease opinion by 1 for each 10 ducats of insult
+            opinion -= opinionDecrease;
+            System.out.println("You humiliated " + targetCountry.getName() + "! Opinion decreased by " + opinionDecrease);
+        } else {
+            System.out.println("Not enough money to humiliate " + targetCountry.getName() + "!");
+        }
     }
 
     public void breakAlliance(Country targetCountry) {
