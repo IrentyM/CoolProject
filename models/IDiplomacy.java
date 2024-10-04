@@ -14,4 +14,5 @@ public interface IDiplomacy {
     void EndWar(Country myCountry,Country targetCountry);
     void breakPact(Country myCountry,Country targetCountry);
     boolean canMakeAction(Country myCountry, Country thisCountry);
+    void ShowInfo(Country targetCountry);
 }

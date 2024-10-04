@@ -168,5 +168,13 @@ public class Diplomacy implements IDiplomacy {
         }
 
     }
+    public void ShowInfo(Country targetCountry){
+        System.out.println("Name of Country: " + targetCountry.getName() + "!");
+        System.out.println("Name of Ledear: " + targetCountry.getLeader().getName() + "!");
+        System.out.println("Number of Ducats: " + targetCountry.getEconomy().getMoney(targetCountry) + "!");
+        System.out.println("Number of soldier: " + targetCountry.getMilitary().getSoldiers() + "!");
+        System.out.println("Number of recruits: " + targetCountry.getMilitary().getAvailableRecruits() + "!");
+
+    }
 
 }

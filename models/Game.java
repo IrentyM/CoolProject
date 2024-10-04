@@ -288,15 +288,17 @@ public class Game {
         System.out.println("Manage Economy of a Country:");
 
         myCountry.getEconomy().calculateIncome(); // Calculate income
-        System.out.println("Current Money: " + myCountry.getEconomy().getMoney() + " ducats");
+        System.out.println("Current Money: " + myCountry.getEconomy().getMoney(myCountry) + " ducats");
     }
 
     // Manage military for a specific country
     private void manageMilitary(Country myCountry) {
         System.out.println("Manage Military of a Country:");
+        myCountry.getMilitary().getSoldiers();
+        myCountry.getMilitary().getAvailableRecruits();
         System.out.print("Enter number of recruits to add: ");
         int recruits = scanner.nextInt();
-        myCountry.getMilitary().recruitSoldiers(recruits); // Recruit soldiers
+        myCountry.getMilitary().recruitSoldiers(myCountry,recruits); // Recruit soldiers
         System.out.println("Total Soldiers: " + myCountry.getMilitary().getSoldiers());
     }
 
@@ -314,6 +316,8 @@ public class Game {
         System.out.println("5. Break Alliance");
         System.out.println("6. Declaining WAR");
         System.out.println("7. End War");
+        System.out.println("8. Break Pact");
+        System.out.println("9. End War");
         System.out.println("0. Back to Menu");
         int actionChoice = scanner.nextInt();
 
@@ -346,6 +350,9 @@ public class Game {
                 break;
             }else if (actionChoice == 8) {
                 myCountry.getDiplomacy().breakPact(myCountry,targetCountry);
+                break;
+            }else if (actionChoice == 9) {
+                myCountry.getDiplomacy().ShowInfo(targetCountry);
                 break;
             }else{
                 running = false;
