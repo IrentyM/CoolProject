@@ -306,7 +306,7 @@ public class Game {
         System.out.println("Diplomacy Points: " + myCountry.getDiplomacy().getDiplomacyPoints(myCountry));
         System.out.println("Opinion of " + targetCountry.getName() + ": " + myCountry.getRelationshipManager().getOpinion(targetCountry));
         System.out.println("Status of " + targetCountry.getName() + ": " + myCountry.getRelationshipManager().getRelationship(targetCountry));
-        System.out.println("Manage Diplomacy of a Country:");
+        System.out.println("\nManage Diplomacy of a Country:");
         System.out.println("1. Form Alliance");
         System.out.println("2. Form Non-Aggression Pact");
         System.out.println("3. Send Gift");
@@ -316,6 +316,7 @@ public class Game {
         System.out.println("7. End War");
         System.out.println("0. Back to Menu");
         int actionChoice = scanner.nextInt();
+
         boolean running = true;
         while (running) {
             if (actionChoice == 1) {
@@ -343,6 +344,9 @@ public class Game {
             }else if (actionChoice == 7) {
                 myCountry.getDiplomacy().EndWar(myCountry,targetCountry);
                 break;
+            }else if (actionChoice == 8) {
+                myCountry.getDiplomacy().breakPact(myCountry,targetCountry);
+                break;
             }else{
                 running = false;
                 System.out.println("Invalid choice. Please try again.");
@@ -354,8 +358,8 @@ public class Game {
 
     // Display available countries
     private void displayCountries() {
-        for (int i = 1; i < countries.size(); i++) {
-            System.out.println(i + ". " + countries.get(i).getName());
+        for (int i = 0; i < countries.size(); i++) {
+            System.out.println(i + 1 + ". " + countries.get(i).getName());
         }
     }
 

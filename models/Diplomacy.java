@@ -33,7 +33,6 @@ public class Diplomacy implements IDiplomacy {
     }
     public boolean canFormAlliance(Country myCountry, Country targetCountry) {
         IRelationship myRelationshipManager = myCountry.getRelationshipManager();
-        // Get the opinion of myCountry towards targetCountry
         int opinion = myRelationshipManager.getOpinion(targetCountry);
         return diplomacyPoints >= 2 && opinion > 0;
     }
@@ -56,20 +55,27 @@ public class Diplomacy implements IDiplomacy {
             return false;
         }
     }
-//    public boolean canDeclareWar(Country myCountry, Country targetCountry) {
-//        RelationshipStatus relationshipStatus = myCountry.getRelationshipManager().getRelationship(targetCountry);
-//        int opinion = myCountry.getRelationshipManager().getOpinion(targetCountry);
-//
-//        // Check if they are at war and if the opinion is higher than -20
-//        if (relationshipStatus == RelationshipStatus.AT_WAR && opinion > -20) {
-//            return true;
-//        } else {
-//            System.out.println("Countries cannot end the war. Status: " + relationshipStatus + ", Opinion: " + opinion);
-//            return false;
-//        }
-//    }
+    public boolean canDeclareWar(Country myCountry, Country targetCountry) {
+        RelationshipStatus relationshipStatus = myCountry.getRelationshipManager().getRelationship(targetCountry);
+        int opinion = myCountry.getRelationshipManager().getOpinion(targetCountry);
+        if (relationshipStatus == RelationshipStatus.NEUTRAL && opinion < -20) {
+            return true;
+        } else {
+            System.out.println("Countries cannot declare war. Status: " + relationshipStatus + ", Opinion: " + opinion);
+            return false;
+        }
+    }
+    public boolean canMakeAction(Country myCountry, Country thisCountry) {
+        RelationshipStatus relationshipStatus = myCountry.getRelationshipManager().getRelationship(thisCountry);
+        if (relationshipStatus == RelationshipStatus.NEUTRAL) {
+            return true;
+        } else {
+            System.out.println("Countries cannot make action. Status: " + relationshipStatus);
+            return false;
+        }
+    }
     public void formAlliance(Country myCountry, Country targetCountry) {
-        if (canFormAlliance(myCountry, targetCountry)) {
+        if (canFormAlliance(myCountry, targetCountry) && canMakeAction(targetCountry, myCountry)) {
             diplomacyPoints -= 2;
             IRelationship myRelationshipManager = myCountry.getRelationshipManager();
             myRelationshipManager.modifyOpinion(targetCountry, +50);
@@ -83,7 +89,7 @@ public class Diplomacy implements IDiplomacy {
     }
 
     public void formNonAggressionPact(Country myCountry, Country targetCountry) {
-        if (canFormNonAggressionPact(myCountry, targetCountry)) {
+        if (canFormNonAggressionPact(myCountry, targetCountry) && canMakeAction(targetCountry, myCountry)) {
             diplomacyPoints -= 1;
             IRelationship myRelationshipManager = myCountry.getRelationshipManager();
             myRelationshipManager.modifyOpinion(targetCountry, +25);
@@ -119,7 +125,14 @@ public class Diplomacy implements IDiplomacy {
             System.out.println("Not enough money to humiliate " + targetCountry.getName() + "!");
         }
     }
-
+    public void breakPact(Country myCountry,Country targetCountry) {
+        IRelationship myRelationshipManager = myCountry.getRelationshipManager();
+        myRelationshipManager.modifyOpinion(targetCountry, -25);
+        myCountry.getRelationshipManager().setRelationship(this.getCountry( targetCountry), RelationshipStatus.NEUTRAL);
+        this.getCountry( targetCountry).getRelationshipManager().setRelationship(targetCountry, RelationshipStatus.NEUTRAL);
+        diplomacyPoints += 2; // Return diplomacy points upon breaking an alliance
+        System.out.println("Pact broken with " + targetCountry.getName() + ".");
+    }
     public void breakAlliance(Country myCountry,Country targetCountry) {
         IRelationship myRelationshipManager = myCountry.getRelationshipManager();
         myRelationshipManager.modifyOpinion(targetCountry, -50);
@@ -130,12 +143,17 @@ public class Diplomacy implements IDiplomacy {
     }
 
     public void declareWar(Country myCountry,Country targetCountry) {
-        IRelationship myRelationshipManager = myCountry.getRelationshipManager();
-        diplomacyPoints -= 2;
-        myRelationshipManager.modifyOpinion(targetCountry, -60);
-        myCountry.getRelationshipManager().setRelationship(this.getCountry(targetCountry), RelationshipStatus.AT_WAR);
-        this.getCountry(targetCountry).getRelationshipManager().setRelationship(targetCountry, RelationshipStatus.AT_WAR);
-        System.out.println("Declared war on " + targetCountry.getName() + "!");
+        if (canDeclareWar(myCountry, targetCountry)) {
+            IRelationship myRelationshipManager = myCountry.getRelationshipManager();
+            diplomacyPoints -= 2;
+            myRelationshipManager.modifyOpinion(targetCountry, -60);
+            myCountry.getRelationshipManager().setRelationship(this.getCountry(targetCountry), RelationshipStatus.AT_WAR);
+            this.getCountry(targetCountry).getRelationshipManager().setRelationship(targetCountry, RelationshipStatus.AT_WAR);
+            System.out.println("Declared war on " + targetCountry.getName() + "!");
+        }else{
+            System.out.println("Not enough money to end war!");
+        }
+
     }
     public void EndWar(Country myCountry,Country targetCountry) {
         if (canEndWar(myCountry, targetCountry)) {
@@ -146,7 +164,7 @@ public class Diplomacy implements IDiplomacy {
             this.getCountry(targetCountry).getRelationshipManager().setRelationship(targetCountry, RelationshipStatus.NEUTRAL);
             System.out.println("End war with " + targetCountry.getName() + "!");
         } else{
-            System.out.println("Not enough money to end war!");
+            System.out.println("You can not declare War in Country!");
         }
 
     }

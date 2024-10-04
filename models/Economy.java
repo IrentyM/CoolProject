@@ -1,9 +1,12 @@
 package models;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Economy implements IEconomy {
     private int money; // Current amount of money
+    private Map<Country, Integer> moneys;
     private List<IRegion> regions; // List of regions to calculate region-based income
     private ILeader leader; // Reference to leader for economic skill
 
@@ -13,8 +16,10 @@ public class Economy implements IEconomy {
     // Constructor
     public Economy(int initialMoney, List<IRegion> regions, ILeader leader) {
         this.money = initialMoney;
+        this.moneys = new HashMap<>();
         this.regions = regions;
         this.leader = leader;
+
     }
 
     public void calculateIncome() {
