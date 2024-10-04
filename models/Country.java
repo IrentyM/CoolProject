@@ -25,7 +25,9 @@ public class Country {
     public String getName() {
         return name;
     }
-
+    public ILeader getLeader() {
+        return leader;
+    }
     public IEconomy getEconomy() {
         return economy;
     }

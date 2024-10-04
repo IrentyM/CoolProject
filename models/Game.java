@@ -244,16 +244,16 @@ public class Game {
     }
     // Display main menu options
     private void displayMenu() {
-        System.out.println("=== Game Menu ===");
-        System.out.println("1. Manage Economy");
-        System.out.println("2. Manage Military");
-        System.out.println("3. Manage Diplomacy");
-        System.out.println("0. Exit");
-        System.out.print("Enter your choice: ");
+
         boolean running = true;
         int choice;
         while (running) {
-
+            System.out.println("=== Game Menu ===");
+            System.out.println("1. Manage Economy");
+            System.out.println("2. Manage Military");
+            System.out.println("3. Manage Diplomacy");
+            System.out.println("0. Exit");
+            System.out.print("Enter your choice: ");
             choice = scanner.nextInt();
             switch (choice) {
                 case 1:
@@ -303,6 +303,9 @@ public class Game {
     // Manage diplomacy for a specific country
     private void manageDiplomacy(Country myCountry, Country targetCountry) {
         System.out.println("\nDiplomatic Actions with: " + targetCountry.getName());
+        System.out.println("Diplomacy Points: " + myCountry.getDiplomacy().getDiplomacyPoints(myCountry));
+        System.out.println("Opinion of " + targetCountry.getName() + ": " + myCountry.getRelationshipManager().getOpinion(targetCountry));
+        System.out.println("Status of " + targetCountry.getName() + ": " + myCountry.getRelationshipManager().getRelationship(targetCountry));
         System.out.println("Manage Diplomacy of a Country:");
         System.out.println("1. Form Alliance");
         System.out.println("2. Form Non-Aggression Pact");
@@ -310,33 +313,48 @@ public class Game {
         System.out.println("4. Humilate Country");
         System.out.println("5. Break Alliance");
         System.out.println("6. Declaining WAR");
+        System.out.println("7. End War");
         System.out.println("0. Back to Menu");
         int actionChoice = scanner.nextInt();
+        boolean running = true;
+        while (running) {
+            if (actionChoice == 1) {
+                myCountry.getDiplomacy().formAlliance(myCountry,targetCountry); // Form alliance
+                break;
+            } else if (actionChoice == 2) {
+                myCountry.getDiplomacy().formNonAggressionPact(myCountry,targetCountry);// Form pact
+                break;
+            } else if (actionChoice == 3) {
+                System.out.println("How many money spent?");
+                int actionGift = scanner.nextInt();
+                myCountry.getDiplomacy().sendGift(myCountry,targetCountry,actionGift);
+                break;
+            }else if (actionChoice == 4) {
+                System.out.println("How many money spent?");
+                int actionHumilate = scanner.nextInt();
+                myCountry.getDiplomacy().humiliate(myCountry,targetCountry,actionHumilate);
+                break;
+            }else if (actionChoice == 5) {
+                myCountry.getDiplomacy().breakAlliance(myCountry,targetCountry);
+                break;
+            }else if (actionChoice == 6) {
+                myCountry.getDiplomacy().declareWar(myCountry,targetCountry);
+                break;
+            }else if (actionChoice == 7) {
+                myCountry.getDiplomacy().EndWar(myCountry,targetCountry);
+                break;
+            }else{
+                running = false;
+                System.out.println("Invalid choice. Please try again.");
+            }
+        }
 
-        if (actionChoice == 1) {
-            myCountry.getDiplomacy().formAlliance(targetCountry); // Form alliance
-
-        } else if (actionChoice == 2) {
-            myCountry.getDiplomacy().formNonAggressionPact(targetCountry);// Form pact
-        } else if (actionChoice == 3) {
-            System.out.println("How many money spent?");
-            int actionGift = scanner.nextInt();
-            myCountry.getDiplomacy().sendGift(targetCountry,actionGift);
-        }else if (actionChoice == 4) {
-            System.out.println("How many money spent?");
-            int actionHumilate = scanner.nextInt();
-            myCountry.getDiplomacy().humiliate(targetCountry,actionHumilate);
-        }else if (actionChoice == 5) {
-            myCountry.getDiplomacy().breakAlliance(targetCountry);
-        }else if (actionChoice == 6) {
-
-            myCountry.getDiplomacy().declareWar(targetCountry);}
 
     }
 
     // Display available countries
     private void displayCountries() {
-        for (int i = 0; i < countries.size(); i++) {
+        for (int i = 1; i < countries.size(); i++) {
             System.out.println(i + ". " + countries.get(i).getName());
         }
     }
