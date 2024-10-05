@@ -17,8 +17,7 @@ public class Game {
 
     // Initialize game state and countries
     private void initializeGame() {
-        // Initialize leaders
-        // Initialize leaders
+        // Initialize leader
         Leader peterI = new Leader.Builder()
                 .setName("Peter I")
                 .setMilitarySkill(8)
