@@ -5,10 +5,4 @@ public class CastleFactory implements BuildingFactory {
     public IBuilding createBuilding() {
         return new Castle();
     }
-    public IBuilding deleteBuilding() {
-        return new Castle();
-    }
-    public IBuilding upgradeBuilding() {
-        return new Castle();
-    }
 }

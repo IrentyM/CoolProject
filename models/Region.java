@@ -36,9 +36,4 @@ public class Region implements IRegion {
             System.out.println(name + " is already at maximum development level.");
         }
     }
-
-    public void addBuilding(IBuilding building) {
-        buildings.add(building);
-        System.out.println(building.getBuildingType() + " added to " + name);
-    }
 }

@@ -1,26 +1,27 @@
 package models;
 
-public class Military implements IMilitary {
-    private int soldiers; // Current number of soldiers
-    private int militaryPoints; // Military points for calculating recruits
+public class Military implements IMilitary, Cloneable {
+    private int soldiers;
+    private int militaryPoints;
     private int recruits;
-    private static final int RECRUITS_PER_MILITARY_POINT = 30; // Recruits per military point
+    private static final int RECRUITS_PER_MILITARY_POINT = 30;
 
-    // Constructor
     public Military(int initialSoldiers, int initialMilitaryPoints) {
         this.soldiers = initialSoldiers;
         this.militaryPoints = initialMilitaryPoints;
-        this.recruits = militaryPoints * RECRUITS_PER_MILITARY_POINT;;
+        this.recruits = militaryPoints * RECRUITS_PER_MILITARY_POINT;
     }
 
     public void recruitSoldiers(Country targetCountry, int numberOfRecruits) {
-        targetCountry.getEconomy().spentMoney(numberOfRecruits);
-        soldiers += numberOfRecruits;
-        recruits -= numberOfRecruits;
+        if (targetCountry.getEconomy().subtractMoney(numberOfRecruits)) {
+            soldiers += numberOfRecruits;
+            recruits -= numberOfRecruits;
+            System.out.println(numberOfRecruits + " soldiers recruited.");
+        }
     }
 
     public int getAvailableRecruits() {
-        return recruits; // Total recruits available based on military points
+        return recruits;
     }
 
     public int getSoldiers() {
