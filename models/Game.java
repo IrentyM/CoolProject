@@ -17,20 +17,72 @@ public class Game {
 
     // Initialize game state and countries
     private void initializeGame() {
-        // Initialize leaders
+        // Initialize leader
+        Leader peterI = new Leader.Builder()
+                .setName("Peter I")
+                .setMilitarySkill(8)
+                .setEconomySkill(7)
+                .setDiplomacySkill(8)
+                .build();
 
-            // Initialize leaders
-            ILeader peterI = new Leader("Peter I", 8, 7, 8);
-            ILeader yongzheng = new Leader("Yongzheng Emperor", 7, 8, 7);
-            ILeader tsewang = new Leader("Tsewang Rabtan", 8, 4, 3);
-            ILeader shahMohammed = new Leader("Shah Mohammed", 5, 6, 7);
-            ILeader kartAbulkhair = new Leader("Kart-Abulkhair", 4, 7, 5);
-            ILeader abulkhair = new Leader("Abulkhair", 8, 3, 4);
-            ILeader sherGaziKhan = new Leader("Shergazi Khan", 5, 5, 6);
-            ILeader muhammadRahim = new Leader("Muhammad Rahim", 4, 7, 4);
-            ILeader abdurahimBey = new Leader("Abdurahim-bey", 3, 6, 6);
+        Leader yongzheng = new Leader.Builder()
+                .setName("Yongzheng Emperor")
+                .setMilitarySkill(7)
+                .setEconomySkill(8)
+                .setDiplomacySkill(7)
+                .build();
 
-            // Initialize regions for each country
+        Leader tsewang = new Leader.Builder()
+                .setName("Tsewang Rabtan")
+                .setMilitarySkill(8)
+                .setEconomySkill(4)
+                .setDiplomacySkill(3)
+                .build();
+
+        Leader shahMohammed = new Leader.Builder()
+                .setName("Shah Mohammed")
+                .setMilitarySkill(5)
+                .setEconomySkill(6)
+                .setDiplomacySkill(7)
+                .build();
+
+        Leader kartAbulkhair = new Leader.Builder()
+                .setName("Kart-Abulkhair")
+                .setMilitarySkill(4)
+                .setEconomySkill(7)
+                .setDiplomacySkill(5)
+                .build();
+
+        Leader abulkhair = new Leader.Builder()
+                .setName("Abulkhair")
+                .setMilitarySkill(8)
+                .setEconomySkill(3)
+                .setDiplomacySkill(4)
+                .build();
+
+        Leader sherGaziKhan = new Leader.Builder()
+                .setName("Shergazi Khan")
+                .setMilitarySkill(5)
+                .setEconomySkill(5)
+                .setDiplomacySkill(6)
+                .build();
+
+        Leader muhammadRahim = new Leader.Builder()
+                .setName("Muhammad Rahim")
+                .setMilitarySkill(4)
+                .setEconomySkill(7)
+                .setDiplomacySkill(4)
+                .build();
+
+        Leader abdurahimBey = new Leader.Builder()
+                .setName("Abdurahim-bey")
+                .setMilitarySkill(3)
+                .setEconomySkill(6)
+                .setDiplomacySkill(6)
+                .build();
+
+
+        // Initialize regions for each country
             List<IRegion> russianRegions = createRussianRegions();
             List<IRegion> qingRegions = createQingRegions();
             List<IRegion> zhungarRegions = createZhungarRegions();
@@ -64,15 +116,15 @@ public class Game {
             IMilitary kokandMilitary = new Military(90, 3);
 
             // Initialize countries
-            countries.add(new Country("Russian Empire", peterI, russianEconomy, russianMilitary, russianRegions));
-            countries.add(new Country("Qing Dynasty", yongzheng, qingEconomy, qingMilitary, qingRegions));
-            countries.add(new Country("Zhungar Khanate", tsewang, zhungarEconomy, zhungarMilitary, zhungarRegions));
-            countries.add(new Country("Middle Juz", shahMohammed, middleJuzEconomy, middleJuzMilitary, middleJuzRegions));
-            countries.add(new Country("Uly Juz", kartAbulkhair, ulyJuzEconomy, ulyJuzMilitary, ulyJuzRegions));
-            countries.add(new Country("Kishi Juz", abulkhair, kishiJuzEconomy, kishiJuzMilitary, kishiJuzRegions));
-            countries.add(new Country("Xiva", sherGaziKhan, xivaEconomy, xivaMilitary, xivaRegions));
-            countries.add(new Country("Bukhara", muhammadRahim, bukharaEconomy, bukharaMilitary, bukharaRegions));
-            countries.add(new Country("Kokand", abdurahimBey, kokandEconomy, kokandMilitary, kokandRegions));
+            countries.add(Country.createCountry("Russian Empire", peterI, russianEconomy, russianMilitary, russianRegions));
+            countries.add(Country.createCountry("Qing Dynasty", yongzheng, qingEconomy, qingMilitary, qingRegions));
+            countries.add(Country.createCountry("Zhungar Khanate", tsewang, zhungarEconomy, zhungarMilitary, zhungarRegions));
+            countries.add(Country.createCountry("Middle Juz", shahMohammed, middleJuzEconomy, middleJuzMilitary, middleJuzRegions));
+            countries.add(Country.createCountry("Uly Juz", kartAbulkhair, ulyJuzEconomy, ulyJuzMilitary, ulyJuzRegions));
+            countries.add(Country.createCountry("Kishi Juz", abulkhair, kishiJuzEconomy, kishiJuzMilitary, kishiJuzRegions));
+            countries.add(Country.createCountry("Xiva", sherGaziKhan, xivaEconomy, xivaMilitary, xivaRegions));
+            countries.add(Country.createCountry("Bukhara", muhammadRahim, bukharaEconomy, bukharaMilitary, bukharaRegions));
+            countries.add(Country.createCountry("Kokand", abdurahimBey, kokandEconomy, kokandMilitary, kokandRegions));
         }
 
         // Create Russian regions
@@ -288,15 +340,17 @@ public class Game {
         System.out.println("Manage Economy of a Country:");
 
         myCountry.getEconomy().calculateIncome(); // Calculate income
-        System.out.println("Current Money: " + myCountry.getEconomy().getMoney() + " ducats");
+        System.out.println("Current Money: " + myCountry.getEconomy().getMoney(myCountry) + " ducats");
     }
 
     // Manage military for a specific country
     private void manageMilitary(Country myCountry) {
         System.out.println("Manage Military of a Country:");
+        myCountry.getMilitary().getSoldiers();
+        myCountry.getMilitary().getAvailableRecruits();
         System.out.print("Enter number of recruits to add: ");
         int recruits = scanner.nextInt();
-        myCountry.getMilitary().recruitSoldiers(recruits); // Recruit soldiers
+        myCountry.getMilitary().recruitSoldiers(myCountry,recruits); // Recruit soldiers
         System.out.println("Total Soldiers: " + myCountry.getMilitary().getSoldiers());
     }
 
@@ -306,7 +360,7 @@ public class Game {
         System.out.println("Diplomacy Points: " + myCountry.getDiplomacy().getDiplomacyPoints(myCountry));
         System.out.println("Opinion of " + targetCountry.getName() + ": " + myCountry.getRelationshipManager().getOpinion(targetCountry));
         System.out.println("Status of " + targetCountry.getName() + ": " + myCountry.getRelationshipManager().getRelationship(targetCountry));
-        System.out.println("Manage Diplomacy of a Country:");
+        System.out.println("\nManage Diplomacy of a Country:");
         System.out.println("1. Form Alliance");
         System.out.println("2. Form Non-Aggression Pact");
         System.out.println("3. Send Gift");
@@ -314,8 +368,11 @@ public class Game {
         System.out.println("5. Break Alliance");
         System.out.println("6. Declaining WAR");
         System.out.println("7. End War");
+        System.out.println("8. Break Pact");
+        System.out.println("9. End War");
         System.out.println("0. Back to Menu");
         int actionChoice = scanner.nextInt();
+
         boolean running = true;
         while (running) {
             if (actionChoice == 1) {
@@ -343,6 +400,12 @@ public class Game {
             }else if (actionChoice == 7) {
                 myCountry.getDiplomacy().EndWar(myCountry,targetCountry);
                 break;
+            }else if (actionChoice == 8) {
+                myCountry.getDiplomacy().breakPact(myCountry,targetCountry);
+                break;
+            }else if (actionChoice == 9) {
+                myCountry.getDiplomacy().ShowInfo(targetCountry);
+                break;
             }else{
                 running = false;
                 System.out.println("Invalid choice. Please try again.");
@@ -354,8 +417,8 @@ public class Game {
 
     // Display available countries
     private void displayCountries() {
-        for (int i = 1; i < countries.size(); i++) {
-            System.out.println(i + ". " + countries.get(i).getName());
+        for (int i = 0; i < countries.size(); i++) {
+            System.out.println(i + 1 + ". " + countries.get(i).getName());
         }
     }
 

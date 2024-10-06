@@ -1,9 +1,12 @@
 package models;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Economy implements IEconomy {
     private int money; // Current amount of money
+    private Map<Country, Integer> moneys;
     private List<IRegion> regions; // List of regions to calculate region-based income
     private ILeader leader; // Reference to leader for economic skill
 
@@ -13,14 +16,17 @@ public class Economy implements IEconomy {
     // Constructor
     public Economy(int initialMoney, List<IRegion> regions, ILeader leader) {
         this.money = initialMoney;
+        this.moneys = new HashMap<>();
         this.regions = regions;
         this.leader = leader;
-    }
 
+    }
+    public void setMoney(Country targetCountry, int money ) {
+        moneys.put(targetCountry, money);
+    }
     public void calculateIncome() {
         int income = calculateEconomicPoints() * DUCAT_VALUE; // Income calculation based on updated economic points
-        money += income; // Add income to total money
-        System.out.println("Income calculated: " + income + " ducats. Total money: " + money);
+        System.out.println("Income calculated: " + income + " ducats.");
     }
 
     private int calculateEconomicPoints() {
@@ -35,6 +41,10 @@ public class Economy implements IEconomy {
         money += amount;
         System.out.println(amount + " ducats added. Total money: " + money);
     }
+    public void spentMoney(int amount) {
+        money -= amount;
+        System.out.println(amount + " ducats spent. Total money: " + money);
+    }
 
     public boolean subtractMoney(int amount) {
         if (money >= amount) {
@@ -47,8 +57,8 @@ public class Economy implements IEconomy {
         }
     }
 
-    public int getMoney() {
-        return money;
+    public int getMoney(Country targetCountry) {
+        return moneys.getOrDefault(targetCountry, money);
     }
 }
 

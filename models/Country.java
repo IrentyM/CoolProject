@@ -11,23 +11,30 @@ public class Country {
     private ILeader leader;
     private List<IRegion> regions;
 
-    public Country(String name, ILeader leader, IEconomy economy, IMilitary military, List<IRegion> regions) {
+    // Constructor is now private to enforce Factory Method usage
+    private Country(String name, ILeader leader, IEconomy economy, IMilitary military, List<IRegion> regions) {
         this.name = name;
         this.leader = leader;
         this.economy = economy;
         this.military = military;
-        this.relationshipManager = new RelationshipManager();
-        this.diplomacy = new Diplomacy(3, economy); // Example diplomacy points initialization
+        this.relationshipManager = RelationshipManager.getInstance(); // Use Singleton
+        this.diplomacy = new Diplomacy(3, economy);
         this.regions = regions;
-        this.relationshipManager = new RelationshipManager();
+    }
+
+    // Factory Method to create Country instances
+    public static Country createCountry(String name, ILeader leader, IEconomy economy, IMilitary military, List<IRegion> regions) {
+        return new Country(name, leader, economy, military, regions);
     }
 
     public String getName() {
         return name;
     }
+
     public ILeader getLeader() {
         return leader;
     }
+
     public IEconomy getEconomy() {
         return economy;
     }
