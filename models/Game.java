@@ -180,6 +180,7 @@ public class Game {
             regions.add(new Region("Ghulja", 3, "Ghulja"));
             regions.add(new Region("Uliastai", 3, "Uliastai"));
             regions.add(new Region("Turfan", 3, "Turfan"));
+
             regions.add(new Region("Kochkor-Ata", 2, "Kochkor-Ata"));
             regions.add(new Region("Kochkor-Ata", 2, "Kochkor-Ata"));
             regions.add(new Region("Kochkor-Ata", 2, "Kochkor-Ata"));
@@ -187,6 +188,11 @@ public class Game {
             regions.add(new Region("Kochkor-Ata", 2, "Kochkor-Ata"));
             regions.add(new Region("Kochkor-Ata", 2, "Kochkor-Ata"));
             regions.add(new Region("Kochkor-Ata", 2, "Kochkor-Ata"));
+
+            Region Ata = new Region("Kochkor-Ata", 2, "Kochkor-Ata");
+            Region sameAta = Ata.clone();
+            regions.add(Ata);
+            regions.add(sameAta);
             return regions;
         }
 
