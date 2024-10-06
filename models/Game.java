@@ -114,7 +114,6 @@ public class Game {
             IMilitary xivaMilitary = new Military(100, 5);
             IMilitary bukharaMilitary = new Military(80, 4);
             IMilitary kokandMilitary = new Military(90, 3);
-
             // Initialize countries
             countries.add(Country.createCountry("Russian Empire", peterI, russianEconomy, russianMilitary, russianRegions));
             countries.add(Country.createCountry("Qing Dynasty", yongzheng, qingEconomy, qingMilitary, qingRegions));
@@ -331,23 +330,119 @@ public class Game {
     }
 
     // Get user choice from input
-    private int getUserChoice() {
-        return scanner.nextInt();
-    }
 
-    // Manage economy for a specific country
     private void manageEconomy(Country myCountry) {
-        System.out.println("Manage Economy of a Country:");
+        Scanner scanner = new Scanner(System.in);
 
-        myCountry.getEconomy().calculateIncome(); // Calculate income
+        BuildingFactory castleFactory = new CastleFactory();
+        IBuilding castle = castleFactory.createBuilding();
+        castle.addMoney(20); // Adding money to the castle
+
+        BuildingFactory farmFactory = new FarmFactory();
+        IBuilding farm = farmFactory.createBuilding();
+        farm.addMoney(10); // Adding money to the farm
+
+        BuildingFactory marketFactory = new MarketFactory();
+        IBuilding market = marketFactory.createBuilding();
+
+        System.out.println("Manage Economy of a Country:");
+        myCountry.getEconomy().calculateIncome(); // Calculating income
         System.out.println("Current Money: " + myCountry.getEconomy().getMoney(myCountry) + " ducats");
+
+        System.out.println("\nManage Buildings of a Country:");
+        System.out.println("1. Adding money to the building");
+        System.out.println("2. Take money from buildings");
+        System.out.println("3. Exit");
+        int choice = scanner.nextInt();
+
+        switch (choice) {
+            case 1:
+                System.out.println("Select building to add money:");
+                System.out.println("1. Castle");
+                System.out.println("2. Farm");
+                System.out.println("3. Market");
+                int buildingChoice = scanner.nextInt();
+                System.out.println("Enter amount to add:");
+                int amountToAdd = scanner.nextInt();
+
+                switch (buildingChoice) {
+                    case 1:
+                        castle.addMoney(amountToAdd);
+                        myCountry.getEconomy().spentMoney(amountToAdd);
+                        System.out.println(amountToAdd + " ducats added to Castle.");
+                        break;
+                    case 2:
+                        farm.addMoney(amountToAdd);
+                        myCountry.getEconomy().spentMoney(amountToAdd);
+                        System.out.println(amountToAdd + " ducats added to Farm.");
+                        break;
+                    case 3:
+                        market.addMoney(amountToAdd);
+                        myCountry.getEconomy().spentMoney(amountToAdd);
+                        System.out.println(amountToAdd + " ducats added to Market.");
+                        break;
+                    default:
+                        System.out.println("Invalid building choice.");
+                        break;
+                }
+                break;
+
+            case 2:
+                System.out.println("Select building to take money from:");
+                System.out.println("1. Castle");
+                System.out.println("2. Farm");
+                System.out.println("3. Market");
+                buildingChoice = scanner.nextInt();
+                System.out.println("Enter amount to take:");
+                int amountToTake = scanner.nextInt();
+
+                switch (buildingChoice) {
+                    case 1:
+                        if (castle.getIncome() >= amountToTake) {
+                            castle.addMoney(-amountToTake); // We extract money
+                            System.out.println(amountToTake + " ducats taken from Castle.");
+                            myCountry.getEconomy().addMoney(amountToTake);
+                        } else {
+                            System.out.println("Not enough money in Castle.");
+                        }
+                        break;
+                    case 2:
+                        if (farm.getIncome() >= amountToTake) {
+                            farm.addMoney(-amountToTake); // We extract money
+                            System.out.println(amountToTake + " ducats taken from Farm.");
+                            myCountry.getEconomy().addMoney(amountToTake);
+                        } else {
+                            System.out.println("Not enough money in Farm.");
+                        }
+                        break;
+                    case 3:
+                        if (market.getIncome() >= amountToTake) {
+                            market.addMoney(-amountToTake); // We extract money
+                            System.out.println(amountToTake + " ducats taken from Market.");
+                            myCountry.getEconomy().addMoney(amountToTake);
+                        } else {
+                            System.out.println("Not enough money in Market.");
+                        }
+                        break;
+                    default:
+                        System.out.println("Invalid building choice.");
+                        break;
+                }
+                break;
+
+            case 3:
+                System.out.println("Exiting...");
+                break;
+
+            default:
+                System.out.println("Invalid choice, please try again.");
+                break;
+        }
     }
 
     // Manage military for a specific country
     private void manageMilitary(Country myCountry) {
         System.out.println("Manage Military of a Country:");
-        myCountry.getMilitary().getSoldiers();
-        myCountry.getMilitary().getAvailableRecruits();
         System.out.print("Enter number of recruits to add: ");
         int recruits = scanner.nextInt();
         myCountry.getMilitary().recruitSoldiers(myCountry,recruits); // Recruit soldiers

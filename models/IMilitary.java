@@ -5,6 +5,4 @@ public interface IMilitary {
     int getAvailableRecruits();
     int getSoldiers();
     void setMilitaryPoints(int militaryPoints);
-    void recruitSoldier(String type);
-    int getSoldiersCount();
 }

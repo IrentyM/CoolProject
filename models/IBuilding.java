@@ -1,5 +1,6 @@
 package models;
 
 public interface IBuilding {
-    String getBuildingType();
+    void addMoney(int amount);
+    int getIncome();
 }
