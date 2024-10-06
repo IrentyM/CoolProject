@@ -1,14 +1,19 @@
 package models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Region implements IRegion {
     private String name;
     private int developmentLevel;
     private String capital;
+    private List<IBuilding> buildings;
 
     public Region(String name, int developmentLevel, String capital) {
         this.name = name;
         this.developmentLevel = developmentLevel;
         this.capital = capital;
+        this.buildings = new ArrayList<>();
     }
 
     public String getName() {
@@ -30,5 +35,10 @@ public class Region implements IRegion {
         } else {
             System.out.println(name + " is already at maximum development level.");
         }
+    }
+
+    public void addBuilding(IBuilding building) {
+        buildings.add(building);
+        System.out.println(building.getBuildingType() + " added to " + name);
     }
 }
