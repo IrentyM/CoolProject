@@ -13,8 +13,8 @@ public class Game {
         this.countries = new ArrayList<>();
         this.scanner = new Scanner(System.in);
         initializeGame(); // Initialize game state
-    }
 
+    }
     // Initialize game state and countries
     private void initializeGame() {
         // Initialize leader
@@ -208,7 +208,7 @@ public class Game {
         // Create Uly Juz regions
         private List<IRegion> createUlyJuzRegions() {
             List<IRegion> regions = new ArrayList<>();
-            regions.add(new Region("Shy", 4, "Shy"));
+            regions.add(new Region("Shy", 4, "Shy",1));
             regions.add(new Region("Taldykorgan", 4, "Taldykorgan"));
             regions.add(new Region("Taldykorgan", 4, "Taldykorgan"));
             regions.add(new Region("Taldykorgan", 4, "Taldykorgan"));

@@ -1,21 +1,19 @@
 package models;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class Region implements IRegion {
+public class Region implements IRegion, CloneableRegion {
     private String name;
     private int developmentLevel;
     private String capital;
-    private List<IBuilding> buildings;
+    private BuildingFactory buildingFactory;
 
-    public Region(String name, int developmentLevel, String capital) {
+    public Region(String name, int developmentLevel, String capital, BuildingFactory factory) {
         this.name = name;
         this.developmentLevel = developmentLevel;
         this.capital = capital;
-        this.buildings = new ArrayList<>();
+        this.buildingFactory = factory;
     }
 
+    // Getter methods
     public String getName() {
         return name;
     }
@@ -28,6 +26,11 @@ public class Region implements IRegion {
         return capital;
     }
 
+    public BuildingFactory getBuildingFactory() {
+        return buildingFactory;
+    }
+
+    // Upgrading the development level
     public void upgradeDevelopmentLevel() {
         if (developmentLevel < 10) {
             developmentLevel++;
@@ -35,5 +38,12 @@ public class Region implements IRegion {
         } else {
             System.out.println(name + " is already at maximum development level.");
         }
+    }
+
+    // Clone method for the Prototype Pattern
+    @Override
+    public Region cloneRegion() {
+        // Creates a shallow copy of the current region
+        return new Region(this.name, this.developmentLevel, this.capital, this.buildingFactory);
     }
 }
