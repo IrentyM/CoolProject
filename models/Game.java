@@ -2,6 +2,7 @@ package models;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Game {
@@ -105,15 +106,15 @@ public class Game {
             IEconomy kokandEconomy = new Economy(500, kokandRegions, abdurahimBey);
 
             // Initialize militaries
-            IMilitary russianMilitary = new Military(500, 8); // Example values
-            IMilitary qingMilitary = new Military(600, 7);
-            IMilitary zhungarMilitary = new Military(300, 8);
-            IMilitary middleJuzMilitary = new Military(250, 5);
-            IMilitary ulyJuzMilitary = new Military(200, 4);
-            IMilitary kishiJuzMilitary = new Military(150, 8);
-            IMilitary xivaMilitary = new Military(100, 5);
-            IMilitary bukharaMilitary = new Military(80, 4);
-            IMilitary kokandMilitary = new Military(90, 3);
+            IMilitary russianMilitary = new Military( 8); // Example values
+            IMilitary qingMilitary = new Military( 7);
+            IMilitary zhungarMilitary = new Military( 8);
+            IMilitary middleJuzMilitary = new Military( 5);
+            IMilitary ulyJuzMilitary = new Military( 4);
+            IMilitary kishiJuzMilitary = new Military(8);
+            IMilitary xivaMilitary = new Military(5);
+            IMilitary bukharaMilitary = new Military(4);
+            IMilitary kokandMilitary = new Military(3);
             // Initialize countries
             countries.add(Country.createCountry("Russian Empire", peterI, russianEconomy, russianMilitary, russianRegions));
             countries.add(Country.createCountry("Qing Dynasty", yongzheng, qingEconomy, qingMilitary, qingRegions));
@@ -448,11 +449,46 @@ public class Game {
 
     // Manage military for a specific country
     private void manageMilitary(Country myCountry) {
-        System.out.println("Manage Military of a Country:");
-        System.out.print("Enter number of recruits to add: ");
-        int recruits = scanner.nextInt();
-        myCountry.getMilitary().recruitSoldiers(myCountry,recruits); // Recruit soldiers
-        System.out.println("Total Soldiers: " + myCountry.getMilitary().getSoldiers());
+        IMilitary military = myCountry.getMilitary();
+
+        System.out.println("Manage Military of " + myCountry.getName() + ":");
+
+        // Display current military stats
+        System.out.println("Total Soldiers: " + military.getSoldierCount());
+        System.out.println("Available Recruits: " + military.getAvailableRecruits());
+
+        // Display soldier counts
+        Map<String, Integer> soldierCounts = military.getSoldierCount();
+        System.out.println("Soldier Counts:");
+        for (Map.Entry<String, Integer> entry : soldierCounts.entrySet()) {
+            System.out.println(entry.getKey() + ": " + entry.getValue());
+        }
+
+        // Ask how many recruits to add
+        System.out.print("Enter the amount of soldiers to recruit: ");
+        Scanner scanner = new Scanner(System.in);
+        int soldierAmount = scanner.nextInt();
+
+        if (soldierAmount <= military.getAvailableRecruits()) {
+            System.out.println("Select type of soldier to recruit (infantry, cavalry): ");
+            String soldierType = scanner.next();
+
+            military.recruitSoldier(soldierType, soldierAmount);
+            military.spendRecruits(soldierAmount);
+            // Display updated stats
+            System.out.println("Updated Military Stats:");
+            System.out.println("Total Soldiers: " + military.getSoldierCount());
+            System.out.println("Available Recruits: " + military.getAvailableRecruits());
+
+            // Display updated soldier counts
+            soldierCounts = military.getSoldierCount();
+            System.out.println("Updated Soldier Counts:");
+            for (Map.Entry<String, Integer> entry : soldierCounts.entrySet()) {
+                System.out.println(entry.getKey() + ": " + entry.getValue());
+            }
+        } else {
+            System.out.println("Not enough recruits available.");
+        }
     }
 
     // Manage diplomacy for a specific country

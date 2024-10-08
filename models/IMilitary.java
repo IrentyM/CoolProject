@@ -1,8 +1,13 @@
 package models;
 
+import java.util.Map;
+
 public interface IMilitary {
     void recruitSoldiers(Country targetCountry, int numberOfRecruits);
     int getAvailableRecruits();
     int getSoldiers();
     void setMilitaryPoints(int militaryPoints);
+    void recruitSoldier(String type, int amount);
+    Map<String, Integer> getSoldierCount();
+    void spendRecruits(int amount) ;// Returns a map of soldier type and count
 }
