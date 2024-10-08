@@ -1,19 +1,21 @@
 package models;
 
-public class Region implements IRegion, CloneableRegion {
+import java.util.ArrayList;
+import java.util.List;
+
+public class Region implements IRegion, Cloneable {
     private String name;
     private int developmentLevel;
     private String capital;
-    private BuildingFactory buildingFactory;
+    private List<IBuilding> buildings;
 
-    public Region(String name, int developmentLevel, String capital, BuildingFactory factory) {
+    public Region(String name, int developmentLevel, String capital) {
         this.name = name;
         this.developmentLevel = developmentLevel;
         this.capital = capital;
-        this.buildingFactory = factory;
+        this.buildings = new ArrayList<>();
     }
 
-    // Getter methods
     public String getName() {
         return name;
     }
@@ -26,11 +28,6 @@ public class Region implements IRegion, CloneableRegion {
         return capital;
     }
 
-    public BuildingFactory getBuildingFactory() {
-        return buildingFactory;
-    }
-
-    // Upgrading the development level
     public void upgradeDevelopmentLevel() {
         if (developmentLevel < 10) {
             developmentLevel++;
@@ -40,10 +37,23 @@ public class Region implements IRegion, CloneableRegion {
         }
     }
 
-    // Clone method for the Prototype Pattern
+    public void addBuilding(IBuilding building) {
+        buildings.add(building);
+    }
+
+    // Prototype method
     @Override
-    public Region cloneRegion() {
-        // Creates a shallow copy of the current region
-        return new Region(this.name, this.developmentLevel, this.capital, this.buildingFactory);
+    protected Region clone() {
+        try {
+            Region cloned = (Region) super.clone();
+            // Deep copy the buildings list
+            cloned.buildings = new ArrayList<>(this.buildings.size());
+            for (IBuilding building : this.buildings) {
+                cloned.buildings.add(building); // Assuming IBuilding also implements Cloneable
+            }
+            return cloned;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(); // Can never happen
+        }
     }
 }
