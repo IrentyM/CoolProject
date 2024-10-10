@@ -2,290 +2,237 @@ package models;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 public class Game {
-    private ArrayList<Country> countries; // List of countries in the game
+    private static ArrayList<Country> countries; // List of countries in the game
     private Scanner scanner; // Scanner for user input
-    private Country myCountry;
+    private static Country myCountry;
+    private int currentCountryIndex = 0;
+    private boolean gameOver = false;
+    private int turnNumber = 1;
+    private TurnState state;
 
     public Game() {
         this.countries = new ArrayList<>();
         this.scanner = new Scanner(System.in);
         initializeGame(); // Initialize game state
+        this.state = new DiplomacyState();  // Start with Diplomacy State
     }
 
     // Initialize game state and countries
     private void initializeGame() {
-        // Initialize leader
-        Leader peterI = new Leader.Builder()
-                .setName("Peter I")
-                .setMilitarySkill(8)
-                .setEconomySkill(7)
-                .setDiplomacySkill(8)
-                .build();
-
-        Leader yongzheng = new Leader.Builder()
-                .setName("Yongzheng Emperor")
-                .setMilitarySkill(7)
-                .setEconomySkill(8)
-                .setDiplomacySkill(7)
-                .build();
-
-        Leader tsewang = new Leader.Builder()
-                .setName("Tsewang Rabtan")
-                .setMilitarySkill(8)
-                .setEconomySkill(4)
-                .setDiplomacySkill(3)
-                .build();
-
-        Leader shahMohammed = new Leader.Builder()
-                .setName("Shah Mohammed")
-                .setMilitarySkill(5)
-                .setEconomySkill(6)
-                .setDiplomacySkill(7)
-                .build();
-
-        Leader kartAbulkhair = new Leader.Builder()
-                .setName("Kart-Abulkhair")
-                .setMilitarySkill(4)
-                .setEconomySkill(7)
-                .setDiplomacySkill(5)
-                .build();
-
-        Leader abulkhair = new Leader.Builder()
-                .setName("Abulkhair")
-                .setMilitarySkill(8)
-                .setEconomySkill(3)
-                .setDiplomacySkill(4)
-                .build();
-
-        Leader sherGaziKhan = new Leader.Builder()
-                .setName("Shergazi Khan")
-                .setMilitarySkill(5)
-                .setEconomySkill(5)
-                .setDiplomacySkill(6)
-                .build();
-
-        Leader muhammadRahim = new Leader.Builder()
-                .setName("Muhammad Rahim")
-                .setMilitarySkill(4)
-                .setEconomySkill(7)
-                .setDiplomacySkill(4)
-                .build();
-
-        Leader abdurahimBey = new Leader.Builder()
-                .setName("Abdurahim-bey")
-                .setMilitarySkill(3)
-                .setEconomySkill(6)
-                .setDiplomacySkill(6)
-                .build();
-
+        // Initialize leaders
+        Leader peterI = createLeader("Peter I", 8, 7, 8);
+        Leader yongzheng = createLeader("Yongzheng Emperor", 7, 8, 7);
+        Leader tsewang = createLeader("Tsewang Rabtan", 8, 4, 3);
+        Leader shahMohammed = createLeader("Shah Mohammed", 5, 6, 7);
+        Leader kartAbulkhair = createLeader("Kart-Abulkhair", 4, 7, 5);
+        Leader abulkhair = createLeader("Abulkhair", 8, 3, 4);
+        Leader sherGaziKhan = createLeader("Shergazi Khan", 5, 5, 6);
+        Leader muhammadRahim = createLeader("Muhammad Rahim", 4, 7, 4);
+        Leader abdurahimBey = createLeader("Abdurahim-bey", 3, 6, 6);
 
         // Initialize regions for each country
-            List<IRegion> russianRegions = createRussianRegions();
-            List<IRegion> qingRegions = createQingRegions();
-            List<IRegion> zhungarRegions = createZhungarRegions();
-            List<IRegion> middleJuzRegions = createMiddleJuzRegions();
-            List<IRegion> ulyJuzRegions = createUlyJuzRegions();
-            List<IRegion> kishiJuzRegions = createKishiJuzRegions();
-            List<IRegion> xivaRegions = createXivaRegions();
-            List<IRegion> bukharaRegions = createBukharaRegions();
-            List<IRegion> kokandRegions = createKokandRegions();
+        List<IRegion> russianRegions = createRussianRegions();
+        List<IRegion> qingRegions = createQingRegions();
+        List<IRegion> zhungarRegions = createZhungarRegions();
+        List<IRegion> middleJuzRegions = createMiddleJuzRegions();
+        List<IRegion> ulyJuzRegions = createUlyJuzRegions();
+        List<IRegion> kishiJuzRegions = createKishiJuzRegions();
+        List<IRegion> xivaRegions = createXivaRegions();
+        List<IRegion> bukharaRegions = createBukharaRegions();
+        List<IRegion> kokandRegions = createKokandRegions();
 
-            // Initialize economies
-            IEconomy russianEconomy = new Economy(1000, russianRegions, peterI);
-            IEconomy qingEconomy = new Economy(1200, qingRegions, yongzheng);
-            IEconomy zhungarEconomy = new Economy(800, zhungarRegions, tsewang);
-            IEconomy middleJuzEconomy = new Economy(500, middleJuzRegions, shahMohammed);
-            IEconomy ulyJuzEconomy = new Economy(400, ulyJuzRegions, kartAbulkhair);
-            IEconomy kishiJuzEconomy = new Economy(300, kishiJuzRegions, abulkhair);
-            IEconomy xivaEconomy = new Economy(600, xivaRegions, sherGaziKhan);
-            IEconomy bukharaEconomy = new Economy(550, bukharaRegions, muhammadRahim);
-            IEconomy kokandEconomy = new Economy(500, kokandRegions, abdurahimBey);
+        // Initialize economies
+        IEconomy russianEconomy = new Economy(1000, russianRegions, peterI);
+        IEconomy qingEconomy = new Economy(1200, qingRegions, yongzheng);
+        IEconomy zhungarEconomy = new Economy(800, zhungarRegions, tsewang);
+        IEconomy middleJuzEconomy = new Economy(500, middleJuzRegions, shahMohammed);
+        IEconomy ulyJuzEconomy = new Economy(400, ulyJuzRegions, kartAbulkhair);
+        IEconomy kishiJuzEconomy = new Economy(300, kishiJuzRegions, abulkhair);
+        IEconomy xivaEconomy = new Economy(600, xivaRegions, sherGaziKhan);
+        IEconomy bukharaEconomy = new Economy(550, bukharaRegions, muhammadRahim);
+        IEconomy kokandEconomy = new Economy(500, kokandRegions, abdurahimBey);
 
-            // Initialize militaries
-            IMilitary russianMilitary = new Military( 8); // Example values
-            IMilitary qingMilitary = new Military( 7);
-            IMilitary zhungarMilitary = new Military( 8);
-            IMilitary middleJuzMilitary = new Military( 5);
-            IMilitary ulyJuzMilitary = new Military( 4);
-            IMilitary kishiJuzMilitary = new Military(8);
-            IMilitary xivaMilitary = new Military(5);
-            IMilitary bukharaMilitary = new Military(4);
-            IMilitary kokandMilitary = new Military(3);
-            // Initialize countries
-            countries.add(Country.createCountry("Russian Empire", peterI, russianEconomy, russianMilitary, russianRegions));
-            countries.add(Country.createCountry("Qing Dynasty", yongzheng, qingEconomy, qingMilitary, qingRegions));
-            countries.add(Country.createCountry("Zhungar Khanate", tsewang, zhungarEconomy, zhungarMilitary, zhungarRegions));
-            countries.add(Country.createCountry("Middle Juz", shahMohammed, middleJuzEconomy, middleJuzMilitary, middleJuzRegions));
-            countries.add(Country.createCountry("Uly Juz", kartAbulkhair, ulyJuzEconomy, ulyJuzMilitary, ulyJuzRegions));
-            countries.add(Country.createCountry("Kishi Juz", abulkhair, kishiJuzEconomy, kishiJuzMilitary, kishiJuzRegions));
-            countries.add(Country.createCountry("Xiva", sherGaziKhan, xivaEconomy, xivaMilitary, xivaRegions));
-            countries.add(Country.createCountry("Bukhara", muhammadRahim, bukharaEconomy, bukharaMilitary, bukharaRegions));
-            countries.add(Country.createCountry("Kokand", abdurahimBey, kokandEconomy, kokandMilitary, kokandRegions));
-        }
+        // Initialize militaries
+        IMilitary russianMilitary = new Military(8); // Example values
+        IMilitary qingMilitary = new Military(7);
+        IMilitary zhungarMilitary = new Military(8);
+        IMilitary middleJuzMilitary = new Military(5);
+        IMilitary ulyJuzMilitary = new Military(4);
+        IMilitary kishiJuzMilitary = new Military(8);
+        IMilitary xivaMilitary = new Military(5);
+        IMilitary bukharaMilitary = new Military(4);
+        IMilitary kokandMilitary = new Military(3);
 
-        // Create Russian regions
-        private List<IRegion> createRussianRegions() {
-            List<IRegion> regions = new ArrayList<>();
-            regions.add(new Region("Moscow", 3, "Moscow"));
-            regions.add(new Region("St. Petersburg", 3, "St. Petersburg"));
-            regions.add(new Region("Novgorod", 2, "Novgorod"));
-            regions.add(new Region("Kazan", 3, "Kazan"));
-            regions.add(new Region("Siberia", 2, "Siberia"));
-            regions.add(new Region("Astrakhan", 3, "Astrakhan"));
-            regions.add(new Region("Caucasus", 3, "Caucasus"));
-            regions.add(new Region("Tver", 3, "Tver"));
-            regions.add(new Region("Smolensk", 2, "Smolensk"));
-            regions.add(new Region("Vladimir", 2, "Vladimir"));
-            regions.add(new Region("Voronezh", 3, "Voronezh"));
-            regions.add(new Region("Tula", 2, "Tula"));
-            regions.add(new Region("Rostov", 2, "Rostov"));
-            regions.add(new Region("Saratov", 3, "Saratov"));
-            regions.add(new Region("Krasnoyarsk", 2, "Krasnoyarsk"));
-            regions.add(new Region("Irkutsk", 2, "Irkutsk"));
-            regions.add(new Region("Kamchatka", 1, "Kamchatka"));
-            regions.add(new Region("Chelyabinsk", 2, "Chelyabinsk"));
-            regions.add(new Region("Perm", 2, "Perm"));
-            regions.add(new Region("Kurgan", 2, "Kurgan"));
-            regions.add(new Region("Orenburg", 3, "Orenburg"));
-            return regions;
-        }
-
-        // Create Qing regions
-        private List<IRegion> createQingRegions() {
-            List<IRegion> regions = new ArrayList<>();
-            regions.add(new Region("Beijing", 4, "Beijing"));
-            regions.add(new Region("Shenyang", 4, "Shenyang"));
-            regions.add(new Region("Xi'an", 4, "Xi'an"));
-            regions.add(new Region("Hangzhou", 4, "Hangzhou"));
-            regions.add(new Region("Nanjing", 4, "Nanjing"));
-            regions.add(new Region("Chengdu", 4, "Chengdu"));
-            regions.add(new Region("Lanzhou", 3, "Lanzhou"));
-            regions.add(new Region("Urumqi", 3, "Urumqi"));
-            regions.add(new Region("Urumqi", 3, "Urumqi"));
-            regions.add(new Region("Urumqi", 3, "Urumqi"));
-            regions.add(new Region("Urumqi", 3, "Urumqi"));
-            regions.add(new Region("Urumqi", 3, "Urumqi"));
-            regions.add(new Region("Urumqi", 3, "Urumqi"));
-            regions.add(new Region("Urumqi", 3, "Urumqi"));
-            regions.add(new Region("Urumqi", 3, "Urumqi"));
-            return regions;
-        }
-
-        // Create Zhungar regions
-        private List<IRegion> createZhungarRegions() {
-            List<IRegion> regions = new ArrayList<>();
-            regions.add(new Region("Ghulja", 3, "Ghulja"));
-            regions.add(new Region("Uliastai", 3, "Uliastai"));
-            regions.add(new Region("Turfan", 3, "Turfan"));
-
-            regions.add(new Region("Kochkor-Ata", 2, "Kochkor-Ata"));
-            regions.add(new Region("Kochkor-Ata", 2, "Kochkor-Ata"));
-            regions.add(new Region("Kochkor-Ata", 2, "Kochkor-Ata"));
-            regions.add(new Region("Kochkor-Ata", 2, "Kochkor-Ata"));
-            regions.add(new Region("Kochkor-Ata", 2, "Kochkor-Ata"));
-            regions.add(new Region("Kochkor-Ata", 2, "Kochkor-Ata"));
-            regions.add(new Region("Kochkor-Ata", 2, "Kochkor-Ata"));
-
-            Region Ata = new Region("Kochkor-Ata", 2, "Kochkor-Ata");
-            Region sameAta = Ata.clone();
-            regions.add(Ata);
-            regions.add(sameAta);
-            return regions;
-        }
-
-        // Create Middle Juz regions
-        private List<IRegion> createMiddleJuzRegions() {
-            List<IRegion> regions = new ArrayList<>();
-            regions.add(new Region("Pavlodar", 3, "Pavlodar"));
-            regions.add(new Region("Semey", 3, "Semey"));
-            regions.add(new Region("Ekibastuz", 3, "Ekibastuz"));
-            regions.add(new Region("Aqmola", 3, "Aqmola"));
-            regions.add(new Region("Aqmola", 3, "Aqmola"));
-            regions.add(new Region("Aqmola", 3, "Aqmola"));
-            regions.add(new Region("Aqmola", 3, "Aqmola"));
-
-            // Add more regions as needed
-            return regions;
-        }
-
-        // Create Uly Juz regions
-        private List<IRegion> createUlyJuzRegions() {
-            List<IRegion> regions = new ArrayList<>();
-            regions.add(new Region("Shy", 4, "Shy"));
-            regions.add(new Region("Taldykorgan", 4, "Taldykorgan"));
-            regions.add(new Region("Taldykorgan", 4, "Taldykorgan"));
-            regions.add(new Region("Taldykorgan", 4, "Taldykorgan"));
-            // Add more regions as needed
-            return regions;
-        }
-
-        // Create Kishi Juz regions
-        private List<IRegion> createKishiJuzRegions() {
-            List<IRegion> regions = new ArrayList<>();
-            regions.add(new Region("Orenburg", 2, "Orenburg"));
-            regions.add(new Region("Orenburg", 2, "Orenburg"));
-            regions.add(new Region("Orenburg", 2, "Orenburg"));
-            regions.add(new Region("Orenburg", 2, "Orenburg"));
-            regions.add(new Region("Orenburg", 2, "Orenburg"));
-            // Add more regions as needed
-            return regions;
-        }
-
-        // Create Xiva regions
-        private List<IRegion> createXivaRegions() {
-            List<IRegion> regions = new ArrayList<>();
-            regions.add(new Region("Xiva", 4, "Xiva"));
-            regions.add(new Region("Xiva", 4, "Xiva"));
-            regions.add(new Region("Xiva", 4, "Xiva"));
-            // Add more regions as needed
-            return regions;
-        }
-
-        // Create Bukhara regions
-        private List<IRegion> createBukharaRegions() {
-            List<IRegion> regions = new ArrayList<>();
-            regions.add(new Region("Bukhara", 5, "Bukhara"));
-            regions.add(new Region("Bukhara", 5, "Bukhara"));
-
-            // Add more regions as needed
-            return regions;
-        }
-
-        // Create Kokand regions
-        private List<IRegion> createKokandRegions() {
-            List<IRegion> regions = new ArrayList<>();
-            regions.add(new Region("Kokand", 4, "Kokand"));
-            regions.add(new Region("Kokand", 4, "Kokand"));
-            regions.add(new Region("Kokand", 4, "Kokand"));
-
-            // Add more regions as needed
-            return regions;
-
+        // Initialize countries
+        countries.add(Country.createCountry("Russian Empire", peterI, russianEconomy, russianMilitary, russianRegions));
+        countries.add(Country.createCountry("Qing Dynasty", yongzheng, qingEconomy, qingMilitary, qingRegions));
+        countries.add(Country.createCountry("Zhungar Khanate", tsewang, zhungarEconomy, zhungarMilitary, zhungarRegions));
+        countries.add(Country.createCountry("Middle Juz", shahMohammed, middleJuzEconomy, middleJuzMilitary, middleJuzRegions));
+        countries.add(Country.createCountry("Uly Juz", kartAbulkhair, ulyJuzEconomy, ulyJuzMilitary, ulyJuzRegions));
+        countries.add(Country.createCountry("Kishi Juz", abulkhair, kishiJuzEconomy, kishiJuzMilitary, kishiJuzRegions));
+        countries.add(Country.createCountry("Xiva", sherGaziKhan, xivaEconomy, xivaMilitary, xivaRegions));
+        countries.add(Country.createCountry("Bukhara", muhammadRahim, bukharaEconomy, bukharaMilitary, bukharaRegions));
+        countries.add(Country.createCountry("Kokand", abdurahimBey, kokandEconomy, kokandMilitary, kokandRegions));
     }
-    private Country chooseCountry(ArrayList<Country> countries) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Choose your country:");
-        displayCountries();
-        int choice = scanner.nextInt();
-        return countries.get(choice - 1);
+
+    private Leader createLeader(String name, int military, int economy, int diplomacy) {
+        return new Leader.Builder()
+                .setName(name)
+                .setMilitarySkill(military)
+                .setEconomySkill(economy)
+                .setDiplomacySkill(diplomacy)
+                .build();
     }
-    public void start() {
-        // Choose a country
-        myCountry = chooseCountry(countries);
 
-        // Display chosen country
-        System.out.println("You have chosen to play as: " + myCountry.getName());
-
-        // Show the menu
-        displayMenu();
+    // Create regions for each country
+    private List<IRegion> createRussianRegions() {
+        List<IRegion> regions = new ArrayList<>();
+        regions.add(new Region("Moscow", 3, "Moscow"));
+        regions.add(new Region("St. Petersburg", 3, "St. Petersburg"));
+        regions.add(new Region("Novgorod", 2, "Novgorod"));
+        regions.add(new Region("Kazan", 3, "Kazan"));
+        regions.add(new Region("Siberia", 2, "Siberia"));
+        regions.add(new Region("Astrakhan", 3, "Astrakhan"));
+        regions.add(new Region("Caucasus", 3, "Caucasus"));
+        regions.add(new Region("Tver", 3, "Tver"));
+        regions.add(new Region("Smolensk", 2, "Smolensk"));
+        regions.add(new Region("Vladimir", 2, "Vladimir"));
+        regions.add(new Region("Voronezh", 3, "Voronezh"));
+        regions.add(new Region("Tula", 2, "Tula"));
+        regions.add(new Region("Rostov", 2, "Rostov"));
+        regions.add(new Region("Saratov", 3, "Saratov"));
+        regions.add(new Region("Krasnoyarsk", 2, "Krasnoyarsk"));
+        regions.add(new Region("Irkutsk", 2, "Irkutsk"));
+        regions.add(new Region("Kamchatka", 1, "Kamchatka"));
+        regions.add(new Region("Chelyabinsk", 2, "Chelyabinsk"));
+        regions.add(new Region("Perm", 2, "Perm"));
+        regions.add(new Region("Kurgan", 2, "Kurgan"));
+        regions.add(new Region("Orenburg", 3, "Orenburg"));
+        return regions;
     }
-    // Start the game loop
 
-    private Country chooseTargetCountry() {
+    private List<IRegion> createQingRegions() {
+        List<IRegion> regions = new ArrayList<>();
+        regions.add(new Region("Beijing", 4, "Beijing"));
+        regions.add(new Region("Shenyang", 4, "Shenyang"));
+        regions.add(new Region("Xi'an", 4, "Xi'an"));
+        regions.add(new Region("Hangzhou", 4, "Hangzhou"));
+        regions.add(new Region("Nanjing", 4, "Nanjing"));
+        regions.add(new Region("Chengdu", 4, "Chengdu"));
+        regions.add(new Region("Lanzhou", 3, "Lanzhou"));
+        regions.add(new Region("Urumqi", 3, "Urumqi"));
+        return regions;
+    }
+
+    private List<IRegion> createZhungarRegions() {
+        List<IRegion> regions = new ArrayList<>();
+        regions.add(new Region("Ghulja", 3, "Ghulja"));
+        regions.add(new Region("Uliastai", 3, "Uliastai"));
+        regions.add(new Region("Turfan", 3, "Turfan"));
+        return regions;
+    }
+
+    private List<IRegion> createMiddleJuzRegions() {
+        List<IRegion> regions = new ArrayList<>();
+        regions.add(new Region("Pavlodar", 3, "Pavlodar"));
+        regions.add(new Region("Semey", 3, "Semey"));
+        regions.add(new Region("Ekibastuz", 3, "Ekibastuz"));
+        regions.add(new Region("Aqmola", 3, "Aqmola"));
+        return regions;
+    }
+
+    private List<IRegion> createUlyJuzRegions() {
+        List<IRegion> regions = new ArrayList<>();
+        regions.add(new Region("Shy", 4, "Shy"));
+        regions.add(new Region("Taldykorgan", 4, "Taldykorgan"));
+        return regions;
+    }
+
+    private List<IRegion> createKishiJuzRegions() {
+        List<IRegion> regions = new ArrayList<>();
+        regions.add(new Region("Orenburg", 2, "Orenburg"));
+        regions.add(new Region("Aktobe", 2, "Aktobe"));
+        regions.add(new Region("Atyrau", 2, "Atyrau"));
+        return regions;
+    }
+
+    private List<IRegion> createXivaRegions() {
+        List<IRegion> regions = new ArrayList<>();
+        regions.add(new Region("Xiva", 4, "Xiva"));
+        regions.add(new Region("Urgench", 4, "Urgench"));
+        return regions;
+    }
+
+    private List<IRegion> createBukharaRegions() {
+        List<IRegion> regions = new ArrayList<>();
+        regions.add(new Region("Bukhara", 5, "Bukhara"));
+        regions.add(new Region("Samarkand", 5, "Samarkand"));
+        return regions;
+    }
+
+    private List<IRegion> createKokandRegions() {
+        List<IRegion> regions = new ArrayList<>();
+        regions.add(new Region("Kokand", 4, "Kokand"));
+        regions.add(new Region("Andijan", 4, "Andijan"));
+        return regions;
+    }
+    public void setState(TurnState state) {
+        this.state = state;
+    }
+
+    public Country getCurrentCountry() {
+        return countries.get(currentCountryIndex);
+    }
+
+    public boolean isLastCountryInTurn() {
+        return currentCountryIndex == countries.size() - 1;
+    }
+
+    public void nextTurn() {
+        System.out.println("Turn: " + turnNumber + " - " + getCurrentCountry().getName());
+        state.manageTurn(this);
+        state.nextState(this);// Execute the current phase of the turn
+        state.manageTurn(this);
+        state.nextState(this);
+        state.manageTurn(this);
+        state.nextState(this);
+
+        if (state instanceof EndTurnState) {
+            startNewTurn();  // Reset for the new turn
+        }
+    }
+
+
+
+
+    public void startNewTurn() {
+        turnNumber++;
+        currentCountryIndex = 0;  // Reset to the first country
+        state = new DiplomacyState();  // Reset state to the first phase
+    }
+
+    public void moveToNextCountry() {
+        currentCountryIndex++;
+        if (currentCountryIndex < countries.size()) {
+            state = new DiplomacyState();  // Start with Diplomacy for the next country
+        }
+    }
+
+//    public void updateResources() {
+//        for (Country country : countries) {
+//            country.getEconomy().calculateIncome();
+//            country.addRecruits();
+//        }
+//    }
+    private void displayCountries() {
+        for (int i = 0; i < countries.size(); i++) {
+            System.out.println(i + 1 + ". " + countries.get(i).getName());
+        }
+    }
+    public static Country chooseTargetCountry() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Available countries for diplomatic interaction:");
 
@@ -300,267 +247,46 @@ public class Game {
         int choice = scanner.nextInt();
         return availableCountries.get(choice - 1); // Return the chosen country for diplomacy
     }
-    // Display main menu options
-    private void displayMenu() {
 
-        boolean running = true;
-        int choice;
-        while (running) {
-            System.out.println("=== Game Menu ===");
-            System.out.println("1. Manage Economy");
-            System.out.println("2. Manage Military");
-            System.out.println("3. Manage Diplomacy");
-            System.out.println("0. Exit");
-            System.out.print("Enter your choice: ");
-            choice = scanner.nextInt();
-            switch (choice) {
-                case 1:
-                    manageEconomy(myCountry);
-                    break;
-                case 2:
-                    manageMilitary(myCountry);
-                    break;
-                case 3:
-                    System.out.println("Choose a country to interact with diplomatically:");
-                    Country targetCountry = chooseTargetCountry();
-                    manageDiplomacy(myCountry,targetCountry);
-                    break;
+    public void endGame() {
+        System.out.println("\nGame Over.");
+        System.out.println("Final statistics:");
 
-                case 0:
-                    running = false;
-                    System.out.println("Exiting the game. Goodbye!");
-                    break;
-                default:
-                    System.out.println("Invalid choice. Please try again.");
-            }
-        }
-    }
-
-    // Get user choice from input
-
-    private void manageEconomy(Country myCountry) {
-        Scanner scanner = new Scanner(System.in);
-
-        BuildingFactory castleFactory = new CastleFactory();
-        IBuilding castle = castleFactory.createBuilding();
-        castle.addMoney(20); // Adding money to the castle
-
-        BuildingFactory farmFactory = new FarmFactory();
-        IBuilding farm = farmFactory.createBuilding();
-        farm.addMoney(10); // Adding money to the farm
-
-        BuildingFactory marketFactory = new MarketFactory();
-        IBuilding market = marketFactory.createBuilding();
-
-        System.out.println("Manage Economy of a Country:");
-        myCountry.getEconomy().calculateIncome(); // Calculating income
-        System.out.println("Current Money: " + myCountry.getEconomy().getMoney(myCountry) + " ducats");
-
-        System.out.println("\nManage Buildings of a Country:");
-        System.out.println("1. Adding money to the building");
-        System.out.println("2. Take money from buildings");
-        System.out.println("3. Exit");
-        int choice = scanner.nextInt();
-
-        switch (choice) {
-            case 1:
-                System.out.println("Select building to add money:");
-                System.out.println("1. Castle");
-                System.out.println("2. Farm");
-                System.out.println("3. Market");
-                int buildingChoice = scanner.nextInt();
-                System.out.println("Enter amount to add:");
-                int amountToAdd = scanner.nextInt();
-
-                switch (buildingChoice) {
-                    case 1:
-                        castle.addMoney(amountToAdd);
-                        myCountry.getEconomy().spentMoney(amountToAdd);
-                        System.out.println(amountToAdd + " ducats added to Castle.");
-                        break;
-                    case 2:
-                        farm.addMoney(amountToAdd);
-                        myCountry.getEconomy().spentMoney(amountToAdd);
-                        System.out.println(amountToAdd + " ducats added to Farm.");
-                        break;
-                    case 3:
-                        market.addMoney(amountToAdd);
-                        myCountry.getEconomy().spentMoney(amountToAdd);
-                        System.out.println(amountToAdd + " ducats added to Market.");
-                        break;
-                    default:
-                        System.out.println("Invalid building choice.");
-                        break;
-                }
-                break;
-
-            case 2:
-                System.out.println("Select building to take money from:");
-                System.out.println("1. Castle");
-                System.out.println("2. Farm");
-                System.out.println("3. Market");
-                buildingChoice = scanner.nextInt();
-                System.out.println("Enter amount to take:");
-                int amountToTake = scanner.nextInt();
-
-                switch (buildingChoice) {
-                    case 1:
-                        if (castle.getIncome() >= amountToTake) {
-                            castle.addMoney(-amountToTake); // We extract money
-                            System.out.println(amountToTake + " ducats taken from Castle.");
-                            myCountry.getEconomy().addMoney(amountToTake);
-                        } else {
-                            System.out.println("Not enough money in Castle.");
-                        }
-                        break;
-                    case 2:
-                        if (farm.getIncome() >= amountToTake) {
-                            farm.addMoney(-amountToTake); // We extract money
-                            System.out.println(amountToTake + " ducats taken from Farm.");
-                            myCountry.getEconomy().addMoney(amountToTake);
-                        } else {
-                            System.out.println("Not enough money in Farm.");
-                        }
-                        break;
-                    case 3:
-                        if (market.getIncome() >= amountToTake) {
-                            market.addMoney(-amountToTake); // We extract money
-                            System.out.println(amountToTake + " ducats taken from Market.");
-                            myCountry.getEconomy().addMoney(amountToTake);
-                        } else {
-                            System.out.println("Not enough money in Market.");
-                        }
-                        break;
-                    default:
-                        System.out.println("Invalid building choice.");
-                        break;
-                }
-                break;
-
-            case 3:
-                System.out.println("Exiting...");
-                break;
-
-            default:
-                System.out.println("Invalid choice, please try again.");
-                break;
-        }
-    }
-
-    // Manage military for a specific country
-    private void manageMilitary(Country myCountry) {
-        IMilitary military = myCountry.getMilitary();
-
-        System.out.println("Manage Military of " + myCountry.getName() + ":");
-
-        // Display current military stats
-        System.out.println("Total Soldiers: " + military.getSoldierCount());
-        System.out.println("Available Recruits: " + military.getAvailableRecruits());
-
-        // Display soldier counts
-        Map<String, Integer> soldierCounts = military.getSoldierCount();
-        System.out.println("Soldier Counts:");
-        for (Map.Entry<String, Integer> entry : soldierCounts.entrySet()) {
-            System.out.println(entry.getKey() + ": " + entry.getValue());
+        // Display stats for each country (like regions controlled, economy, military, etc.)
+        for (Country country : countries) {
+            System.out.println("------------------------------");
+            System.out.println("Country: " + country.getName());
+            System.out.println("Regions controlled: " + country.getRegions().size());
         }
 
-        // Ask how many recruits to add
-        System.out.print("Enter the amount of soldiers to recruit: ");
-        Scanner scanner = new Scanner(System.in);
-        int soldierAmount = scanner.nextInt();
-
-        if (soldierAmount <= military.getAvailableRecruits()) {
-            System.out.println("Select type of soldier to recruit (infantry, cavalry): ");
-            String soldierType = scanner.next();
-
-            military.recruitSoldier(soldierType, soldierAmount);
-            military.spendRecruits(soldierAmount);
-            // Display updated stats
-            System.out.println("Updated Military Stats:");
-            System.out.println("Total Soldiers: " + military.getSoldierCount());
-            System.out.println("Available Recruits: " + military.getAvailableRecruits());
-
-            // Display updated soldier counts
-            soldierCounts = military.getSoldierCount();
-            System.out.println("Updated Soldier Counts:");
-            for (Map.Entry<String, Integer> entry : soldierCounts.entrySet()) {
-                System.out.println(entry.getKey() + ": " + entry.getValue());
-            }
+        // Optionally, you could calculate and display the winner (if there is one)
+        Country winner = determineWinner();
+        if (winner != null) {
+            System.out.println("\nThe winner of the game is: " + winner.getName() + "!");
         } else {
-            System.out.println("Not enough recruits available.");
+            System.out.println("\nNo clear winner.");
         }
+
+        System.out.println("\nThank you for playing!");
+        gameOver = true;  // Mark the game as over
     }
 
-    // Manage diplomacy for a specific country
-    private void manageDiplomacy(Country myCountry, Country targetCountry) {
-        System.out.println("\nDiplomatic Actions with: " + targetCountry.getName());
-        System.out.println("Diplomacy Points: " + myCountry.getDiplomacy().getDiplomacyPoints(myCountry));
-        System.out.println("Opinion of " + targetCountry.getName() + ": " + myCountry.getRelationshipManager().getOpinion(targetCountry));
-        System.out.println("Status of " + targetCountry.getName() + ": " + myCountry.getRelationshipManager().getRelationship(targetCountry));
-        System.out.println("\nManage Diplomacy of a Country:");
-        System.out.println("1. Form Alliance");
-        System.out.println("2. Form Non-Aggression Pact");
-        System.out.println("3. Send Gift");
-        System.out.println("4. Humilate Country");
-        System.out.println("5. Break Alliance");
-        System.out.println("6. Declaining WAR");
-        System.out.println("7. End War");
-        System.out.println("8. Break Pact");
-        System.out.println("9. End War");
-        System.out.println("0. Back to Menu");
-        int actionChoice = scanner.nextInt();
+    public boolean isGameOver() {
+        return gameOver;
+    }
 
-        boolean running = true;
-        while (running) {
-            if (actionChoice == 1) {
-                myCountry.getDiplomacy().formAlliance(myCountry,targetCountry); // Form alliance
-                break;
-            } else if (actionChoice == 2) {
-                myCountry.getDiplomacy().formNonAggressionPact(myCountry,targetCountry);// Form pact
-                break;
-            } else if (actionChoice == 3) {
-                System.out.println("How many money spent?");
-                int actionGift = scanner.nextInt();
-                myCountry.getDiplomacy().sendGift(myCountry,targetCountry,actionGift);
-                break;
-            }else if (actionChoice == 4) {
-                System.out.println("How many money spent?");
-                int actionHumilate = scanner.nextInt();
-                myCountry.getDiplomacy().humiliate(myCountry,targetCountry,actionHumilate);
-                break;
-            }else if (actionChoice == 5) {
-                myCountry.getDiplomacy().breakAlliance(myCountry,targetCountry);
-                break;
-            }else if (actionChoice == 6) {
-                myCountry.getDiplomacy().declareWar(myCountry,targetCountry);
-                break;
-            }else if (actionChoice == 7) {
-                myCountry.getDiplomacy().EndWar(myCountry,targetCountry);
-                break;
-            }else if (actionChoice == 8) {
-                myCountry.getDiplomacy().breakPact(myCountry,targetCountry);
-                break;
-            }else if (actionChoice == 9) {
-                myCountry.getDiplomacy().ShowInfo(targetCountry);
-                break;
-            }else{
-                running = false;
-                System.out.println("Invalid choice. Please try again.");
+    // Example method to determine the winner (could be based on regions, economy, etc.)
+    private Country determineWinner() {
+        Country winner = null;
+        int maxRegions = 0;
+
+        for (Country country : countries) {
+            if (country.getRegions().size() > maxRegions) {
+                maxRegions = country.getRegions().size();
+                winner = country;
             }
         }
 
-
-    }
-
-    // Display available countries
-    private void displayCountries() {
-        for (int i = 0; i < countries.size(); i++) {
-            System.out.println(i + 1 + ". " + countries.get(i).getName());
-        }
-    }
-
-    // Get user choice for a country
-    private int getUserCountryChoice() {
-        return scanner.nextInt();
+        return winner;
     }
 }
