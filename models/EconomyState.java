@@ -1,11 +1,16 @@
 package models;
 
+import java.util.Objects;
+
 class EconomyState implements TurnState {
     @Override
     public void manageTurn(Game context) {
         Country currentCountry = context.getCurrentCountry();
-        System.out.println("Economy phase for " + currentCountry.getName());
-        currentCountry.manageEconomy(currentCountry);
+        if (Objects.requireNonNull(currentCountry.getType()) == CountryType.NEUTRAL) {
+            System.out.println("Economy phase for " + currentCountry.getName());
+            currentCountry.manageEconomy(currentCountry);
+        }
+
     }
 
     @Override

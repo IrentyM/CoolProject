@@ -15,4 +15,5 @@ public interface IDiplomacy {
     void breakPact(Country myCountry,Country targetCountry);
     boolean canMakeAction(Country myCountry, Country thisCountry);
     void ShowInfo(Country targetCountry);
+    int getOpinion(Country myCountry, Country targetCountry);
 }

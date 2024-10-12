@@ -21,7 +21,7 @@ public class Military implements IMilitary {
         this.soldierFactory = new SoldierFactory(); // Factory for soldier creation
     }
 
-    public void recruitSoldier(String type, int amount) {
+    public int recruitSoldier(String type, int amount) {
         Soldier newSoldier = soldierFactory.createSoldier(type, amount);
         if (recruits >= newSoldier.getCost()) {
             recruits -= newSoldier.getCost();
@@ -32,6 +32,7 @@ public class Military implements IMilitary {
         } else {
             System.out.println("Not enough recruits to create " + newSoldier.getType());
         }
+        return amount;
     }
 
     public Map<String, Integer> getSoldierCount() {
@@ -67,5 +68,8 @@ public class Military implements IMilitary {
     @Override
     public void recruitSoldiers(Country targetCountry, int numberOfRecruits) {
         // Implementation for recruiting soldiers for a specific country
+    }
+    public boolean canRecruitSoldiers(){
+        return true;
     }
 }

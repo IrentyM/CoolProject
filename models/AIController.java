@@ -1,13 +1,13 @@
 package models;
 
 public class AIController {
-    private AIActionStrategy strategy;
+    private static AIActionStrategy strategy;
 
-    public void setStrategy(AIActionStrategy strategy) {
-        this.strategy = strategy;
+    public static void setStrategy(AIActionStrategy strategy) {
+        AIController.strategy = strategy;
     }
 
-    public void performAction(Country country, Game game) {
+    public static void performAction(Country country, Game game) {
         if (strategy != null) {
             strategy.executeAction(country,game);
         }

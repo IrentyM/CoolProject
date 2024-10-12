@@ -8,6 +8,7 @@ public class Country {
     private String name;
     private IEconomy economy;
     private IMilitary military;
+    private CountryType type;
     private IRelationship relationshipManager;
     private IDiplomacy diplomacy;
     private ILeader leader;
@@ -15,10 +16,11 @@ public class Country {
     private Scanner scanner;
 
     // Constructor is now private to enforce Factory Method usage
-    private Country(String name, ILeader leader, IEconomy economy, IMilitary military, List<IRegion> regions) {
+    private Country(String name, ILeader leader, IEconomy economy, IMilitary military, List<IRegion> regions,CountryType type) {
         this.name = name;
         this.leader = leader;
         this.economy = economy;
+        this.type = type;
         this.military = military;
         this.relationshipManager = RelationshipManager.getInstance(); // Use Singleton
         this.diplomacy = new Diplomacy(3, economy);
@@ -28,8 +30,8 @@ public class Country {
     }
 
     // Factory Method to create Country instances
-    public static Country createCountry(String name, ILeader leader, IEconomy economy, IMilitary military, List<IRegion> regions) {
-        return new Country(name, leader, economy, military, regions);
+    public static Country createCountry(String name, ILeader leader, IEconomy economy, IMilitary military, List<IRegion> regions,CountryType type) {
+        return new Country(name, leader, economy, military, regions,type);
     }
 
     public String getName() {
@@ -267,5 +269,9 @@ public class Country {
                 System.out.println("Invalid choice, please try again.");
                 break;
         }
+    }
+
+    public CountryType getType() {
+        return type;
     }
 }

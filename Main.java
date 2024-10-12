@@ -1,7 +1,10 @@
 import models.Game;
+
+
 public class
 Main {
-    public static void main(String[] args) {
+    public static void main(String[] args)
+    {
         Game context = new Game();
         while (!context.isGameOver()) {
             context.nextTurn();  // Play through the current country's phases

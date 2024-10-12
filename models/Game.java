@@ -67,15 +67,15 @@ public class Game {
         IMilitary kokandMilitary = new Military(3);
 
         // Initialize countries
-        countries.add(Country.createCountry("Russian Empire", peterI, russianEconomy, russianMilitary, russianRegions));
-        countries.add(Country.createCountry("Qing Dynasty", yongzheng, qingEconomy, qingMilitary, qingRegions));
-        countries.add(Country.createCountry("Zhungar Khanate", tsewang, zhungarEconomy, zhungarMilitary, zhungarRegions));
-        countries.add(Country.createCountry("Middle Juz", shahMohammed, middleJuzEconomy, middleJuzMilitary, middleJuzRegions));
-        countries.add(Country.createCountry("Uly Juz", kartAbulkhair, ulyJuzEconomy, ulyJuzMilitary, ulyJuzRegions));
-        countries.add(Country.createCountry("Kishi Juz", abulkhair, kishiJuzEconomy, kishiJuzMilitary, kishiJuzRegions));
-        countries.add(Country.createCountry("Xiva", sherGaziKhan, xivaEconomy, xivaMilitary, xivaRegions));
-        countries.add(Country.createCountry("Bukhara", muhammadRahim, bukharaEconomy, bukharaMilitary, bukharaRegions));
-        countries.add(Country.createCountry("Kokand", abdurahimBey, kokandEconomy, kokandMilitary, kokandRegions));
+        countries.add(Country.createCountry("Russian Empire", peterI, russianEconomy, russianMilitary, russianRegions, CountryType.NEUTRAL));
+        countries.add(Country.createCountry("Qing Dynasty", yongzheng, qingEconomy, qingMilitary, qingRegions , CountryType.ECONOMIC));
+        countries.add(Country.createCountry("Zhungar Khanate", tsewang, zhungarEconomy, zhungarMilitary, zhungarRegions, CountryType.AGGRESSIVE));
+        countries.add(Country.createCountry("Middle Juz", shahMohammed, middleJuzEconomy, middleJuzMilitary, middleJuzRegions, CountryType.ECONOMIC));
+        countries.add(Country.createCountry("Uly Juz", kartAbulkhair, ulyJuzEconomy, ulyJuzMilitary, ulyJuzRegions, CountryType.DIPLOMATIC));
+        countries.add(Country.createCountry("Kishi Juz", abulkhair, kishiJuzEconomy, kishiJuzMilitary, kishiJuzRegions, CountryType.AGGRESSIVE));
+        countries.add(Country.createCountry("Xiva", sherGaziKhan, xivaEconomy, xivaMilitary, xivaRegions, CountryType.ECONOMIC));
+        countries.add(Country.createCountry("Bukhara", muhammadRahim, bukharaEconomy, bukharaMilitary, bukharaRegions, CountryType.ECONOMIC));
+        countries.add(Country.createCountry("Kokand", abdurahimBey, kokandEconomy, kokandMilitary, kokandRegions, CountryType.DIPLOMATIC));
     }
 
     private Leader createLeader(String name, int military, int economy, int diplomacy) {
@@ -193,12 +193,10 @@ public class Game {
 
     public void nextTurn() {
         System.out.println("Turn: " + turnNumber + " - " + getCurrentCountry().getName());
-        state.manageTurn(this);
-        state.nextState(this);// Execute the current phase of the turn
-        state.manageTurn(this);
-        state.nextState(this);
-        state.manageTurn(this);
-        state.nextState(this);
+        for (int i = 0; i < 4; i++) {
+            state.manageTurn(this);
+            state.nextState(this);
+        }
 
         if (state instanceof EndTurnState) {
             startNewTurn();  // Reset for the new turn
@@ -221,7 +219,7 @@ public class Game {
         }
     }
 
-//    public void updateResources() {
+    //    public void updateResources() {
 //        for (Country country : countries) {
 //            country.getEconomy().calculateIncome();
 //            country.addRecruits();
@@ -288,5 +286,9 @@ public class Game {
         }
 
         return winner;
+    }
+
+    public List<Country> getAllCountries() {
+        return countries;
     }
 }
