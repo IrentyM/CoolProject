@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class Game {
+public class Game implements Subject{
+    private List<Observer> observers = new ArrayList<>();
     private static ArrayList<Country> countries; // List of countries in the game
     private Scanner scanner; // Scanner for user input
     private static Country myCountry;
@@ -192,11 +193,13 @@ public class Game {
     }
 
     public void nextTurn() {
-        System.out.println("Turn: " + turnNumber + " - " + getCurrentCountry().getName());
+        notifyObservers();
         for (int i = 0; i < 4; i++) {
             state.manageTurn(this);
             state.nextState(this);
         }
+
+
 
         if (state instanceof EndTurnState) {
             startNewTurn();  // Reset for the new turn
@@ -290,5 +293,25 @@ public class Game {
 
     public List<Country> getAllCountries() {
         return countries;
+    }
+
+    public void registerObserver(Observer observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void unregisterObserver(Observer observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers() {
+        for (Observer observer : observers) {
+            observer.update();
+        }
+    }
+
+    public int getCurrentTurnNumber() {
+        return turnNumber;
     }
 }

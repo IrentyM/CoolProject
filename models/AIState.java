@@ -6,7 +6,6 @@ class AIState implements TurnState {
         Country currentCountry = context.getCurrentCountry();
 
         // AI logic for choosing actions based on strategy
-        System.out.println("AI turn for " + currentCountry.getName());
         switch (currentCountry.getType()) {
             case AGGRESSIVE:
                 AIController.setStrategy(new AggressiveStrategy());
