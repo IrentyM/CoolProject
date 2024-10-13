@@ -6,4 +6,6 @@ public interface IEconomy {
     void addMoney(int amount);
     int getMoney(Country targetCountry) ;
     void spentMoney(int amount);
+
+    void accept(Visitor visitor);
 }

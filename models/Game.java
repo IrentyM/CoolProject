@@ -199,12 +199,12 @@ public class Game implements Subject{
             state.nextState(this);
         }
 
-
-
         if (state instanceof EndTurnState) {
+            calculateEconomicStrength();
             startNewTurn();  // Reset for the new turn
         }
     }
+
 
 
 
@@ -314,4 +314,13 @@ public class Game implements Subject{
     public int getCurrentTurnNumber() {
         return turnNumber;
     }
+
+    public void calculateEconomicStrength() {
+        Visitor economicVisitor = new EconomicStrengthVisitor();
+        for (Country country : countries) {
+            country.accept(economicVisitor);
+        }
+        System.out.println("Total economic strength: " + ((EconomicStrengthVisitor) economicVisitor).getTotalStrength());
+    }
+
 }

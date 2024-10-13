@@ -270,8 +270,14 @@ public class Country {
                 break;
         }
     }
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
+        economy.accept(visitor);
+//        military.accept(visitor);
+    }
 
     public CountryType getType() {
         return type;
     }
+
 }

@@ -60,5 +60,18 @@ public class Economy implements IEconomy {
     public int getMoney(Country targetCountry) {
         return moneys.getOrDefault(targetCountry, money);
     }
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
+    }
+
+    public int getTotalWealth() {
+        int totalWealth = money; // Start with the money held by this Economy instance
+        // Iterate through the map of country money to calculate total wealth
+        for (Map.Entry<Country, Integer> entry : moneys.entrySet()) {
+            totalWealth += entry.getValue(); // Add each country's wealth
+        }
+        return totalWealth;
+    }
 }
 
