@@ -1,13 +1,19 @@
+import models.Game;
+import models.GameStatisticsDisplay;
+
 public class Main {
     public static void main(String[] args) {
-        Employee employee = new Employee("John Doe", 50000);
+        Game context = new Game();
+        GameStatisticsDisplay display = new GameStatisticsDisplay(context); // Create the observer
 
-        TaxCalculator standardTaxCalculator = new StandardTaxCalculator();
-        TaxService taxService = new TaxService(standardTaxCalculator);
-        System.out.println("Standard Tax: " + taxService.calculateEmployeeTax(employee));
-
-        TaxCalculator seniorTaxCalculator = new SeniorTaxCalculator();
-        taxService = new TaxService(seniorTaxCalculator);
-        System.out.println("Senior Employee Tax: " + taxService.calculateEmployeeTax(employee));
+        while (!context.isGameOver()) {
+            context.nextTurn();  // Play through the current country's phases
+            if (context.isLastCountryInTurn()) {
+                context.startNewTurn();  // Move to the next turn
+            } else {
+                context.moveToNextCountry();  // Move to the next country
+            }
+        }
+        System.out.println("Game Over!");
     }
 }
