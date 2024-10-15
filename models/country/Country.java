@@ -154,10 +154,21 @@ public class Country {
         int soldierAmount = scanner.nextInt();
 
         if (soldierAmount <= military.getAvailableRecruits()) {
-            System.out.println("Select type of soldier to recruit (infantry, cavalry): ");
-            String soldierType = scanner.next();
+            boolean validInput = false;
+            while (!validInput) {
+                System.out.println("Select type of soldier to recruit (infantry, cavalry): ");
+                String soldierType = scanner.next();
 
-            military.recruitSoldier(soldierType, soldierAmount);
+                // Check if the input matches the expected soldier types
+                if (soldierType.equalsIgnoreCase("infantry") || soldierType.equalsIgnoreCase("cavalry")) {
+                    military.recruitSoldier(soldierType, soldierAmount);
+                    validInput = true; // Valid input, break the loop
+                } else {
+                    System.out.println("Invalid input. Please enter 'infantry' or 'cavalry'.");
+                }
+            }
+
+
             military.spendRecruits(soldierAmount);
             // Display updated stats
             System.out.println("Updated Military Stats:");
@@ -292,4 +303,7 @@ public class Country {
         return type;
     }
 
+    public void setType(CountryType type) {
+        this.type = type;
+    }
 }

@@ -31,6 +31,8 @@ public class Game implements Subject {
         this.countries = new ArrayList<>();
         this.scanner = new Scanner(System.in);
         initializeGame(); // Initialize game state
+        choosePlayerCountry();
+        moveMyCountryToFirst();
         this.state = new DiplomacyState();  // Start with Diplomacy State
     }
 
@@ -81,7 +83,7 @@ public class Game implements Subject {
         IMilitary kokandMilitary = new Military(3);
 
         // Initialize countries
-        countries.add(Country.createCountry("Russian Empire", peterI, russianEconomy, russianMilitary, russianRegions, CountryType.NEUTRAL));
+        countries.add(Country.createCountry("Russian Empire", peterI, russianEconomy, russianMilitary, russianRegions, CountryType.DIPLOMATIC));
         countries.add(Country.createCountry("Qing Dynasty", yongzheng, qingEconomy, qingMilitary, qingRegions , CountryType.ECONOMIC));
         countries.add(Country.createCountry("Zhungar Khanate", tsewang, zhungarEconomy, zhungarMilitary, zhungarRegions, CountryType.AGGRESSIVE));
         countries.add(Country.createCountry("Middle Juz", shahMohammed, middleJuzEconomy, middleJuzMilitary, middleJuzRegions, CountryType.ECONOMIC));
@@ -207,11 +209,11 @@ public class Game implements Subject {
 
     public void nextTurn() {
         notifyObservers();
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 3; i++) {
             state.manageTurn(this);
             state.nextState(this);
         }
-
+        state.manageTurn(this);
         if (state instanceof EndTurnState) {
             calculateEconomicStrength();
             startNewTurn();  // Reset for the new turn
@@ -246,6 +248,23 @@ public class Game implements Subject {
             System.out.println(i + 1 + ". " + countries.get(i).getName());
         }
     }
+    public void choosePlayerCountry() {
+        System.out.println("Choose a country to play:");
+
+        // Display available countries to the player
+        for (int i = 0; i < countries.size(); i++) {
+            System.out.println((i + 1) + ". " + countries.get(i).getName());
+        }
+
+        // Get player's choice
+        int choice = scanner.nextInt();
+        myCountry = countries.get(choice - 1); // Assign the chosen country to myCountry
+
+        // Set the chosen country type to neutral, indicating it's controlled by the player
+        myCountry.setType(CountryType.NEUTRAL);
+
+        System.out.println("You have chosen " + myCountry.getName() + " as your country.");
+    }
     public static Country chooseTargetCountry() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Available countries for diplomatic interaction:");
@@ -261,7 +280,13 @@ public class Game implements Subject {
         int choice = scanner.nextInt();
         return availableCountries.get(choice - 1); // Return the chosen country for diplomacy
     }
+    private void moveMyCountryToFirst() {
+        // Remove the chosen country from its current position
+        countries.remove(myCountry);
 
+        // Add it back at the first position
+        countries.add(0, myCountry);
+    }
     public void endGame() {
         System.out.println("\nGame Over.");
         System.out.println("Final statistics:");

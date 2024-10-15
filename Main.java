@@ -5,7 +5,6 @@ public class Main {
     public static void main(String[] args) {
         Game context = new Game();
         GameStatisticsDisplay display = new GameStatisticsDisplay(context); // Create the observer
-
         while (!context.isGameOver()) {
             context.nextTurn();  // Play through the current country's phases
             if (context.isLastCountryInTurn()) {
