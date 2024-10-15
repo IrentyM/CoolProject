@@ -1,5 +1,5 @@
-import models.Game;
-import models.GameStatisticsDisplay;
+import models.game.Game;
+import models.game.GameStatisticsDisplay;
 
 public class Main {
     public static void main(String[] args) {
