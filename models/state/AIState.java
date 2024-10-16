@@ -41,7 +41,7 @@ class AIState implements TurnState {
             context.setState(new EndTurnState());  // Move to End Turn state
         } else {
             context.moveToNextCountry();  // Move to the next country
-            context.setState(new DiplomacyState());  // Start with Diplomacy for the next country
+            context.setState(new EventState());  // Start with Diplomacy for the next country
         }
     }
 }

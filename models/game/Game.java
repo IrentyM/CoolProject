@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import models.EventTemplate.EconomicBoostEvent;
+import models.EventTemplate.GameEvent;
+import models.EventTemplate.WarDeclarationEvent;
 import models.country.Country;
 import models.country.CountryType;
 import models.general.Economy;
@@ -15,6 +18,7 @@ import models.general.Military;
 import models.general.Region;
 import models.state.DiplomacyState;
 import models.state.EndTurnState;
+import models.state.EventState;
 import models.state.TurnState;
 
 public class Game implements Subject {
@@ -33,7 +37,7 @@ public class Game implements Subject {
         initializeGame(); // Initialize game state
         choosePlayerCountry();
         moveMyCountryToFirst();
-        this.state = new DiplomacyState();  // Start with Diplomacy State
+        this.state = new EventState();  // Start with Diplomacy State
     }
 
     // Initialize game state and countries
@@ -195,6 +199,28 @@ public class Game implements Subject {
         regions.add(new Region("Andijan", 4, "Andijan"));
         return regions;
     }
+    public void initializeGameEvents() {
+        Country russia = getCountryByName("Russian Empire");
+        Country zhungars = getCountryByName("Zhungar Khanate");
+
+        // Trigger a war declaration event
+        if (turnNumber == 2){
+            System.out.println("\nEvent:");
+            System.out.println("Russian Empire diplomats was killed by Zhungars army");
+            System.out.println("War will come?");
+            GameEvent warEvent = new WarDeclarationEvent(russia, zhungars);
+            warEvent.triggerEvent();
+        }
+
+
+        // Trigger an economic boost event
+        Country middleJuz = getCountryByName("Middle Juz");
+        if (turnNumber == 3){
+            GameEvent economicBoost = new EconomicBoostEvent(middleJuz);
+            economicBoost.triggerEvent();
+        }
+
+    }
     public void setState(TurnState state) {
         this.state = state;
     }
@@ -209,7 +235,7 @@ public class Game implements Subject {
 
     public void nextTurn() {
         notifyObservers();
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 4; i++) {
             state.manageTurn(this);
             state.nextState(this);
         }
@@ -227,13 +253,13 @@ public class Game implements Subject {
     public void startNewTurn() {
         turnNumber++;
         currentCountryIndex = 0;  // Reset to the first country
-        state = new DiplomacyState();  // Reset state to the first phase
+        state = new EventState();  // Reset state to the first phase
     }
 
     public void moveToNextCountry() {
         currentCountryIndex++;
         if (currentCountryIndex < countries.size()) {
-            state = new DiplomacyState();  // Start with Diplomacy for the next country
+            state = new EventState();  // Start with Diplomacy for the next country
         }
     }
 
@@ -360,7 +386,16 @@ public class Game implements Subject {
         }
 //       System.out.println("Total economic strength: " + ((EconomicStrengthVisitor) economicVisitor).getTotalStrength());
     }
-
+    public Country getCountryByName(String name) {
+        // Search through the list of countries for a match
+        for (Country country : countries) {
+            if (country.getName().equalsIgnoreCase(name)) {
+                return country;
+            }
+        }
+        // If no country is found, return null or throw an exception
+        return null;
+    }
 
 
 }

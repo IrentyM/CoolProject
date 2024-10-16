@@ -6,13 +6,14 @@ import models.game.Game;
 public class AggressiveStrategy implements  AIActionStrategy {
     @Override
     public void executeAction(Country country, Game game) {
-        System.out.println(country.getName() + " is taking aggressive actions.");
+        System.out.println("\n" + country.getName() + " is taking aggressive actions.");
 
         // 1. Recruit soldiers if possible
         if (country.getMilitary().canRecruitSoldiers()) {
             int recruits = country.getMilitary().recruitSoldier("infantry",100); // Method to recruit based on available resources
             System.out.println(country.getName() + " recruits " + recruits + " soldiers.");
         }
+        country.getEconomy().calculateIncome();
 
         // 2. Find a weak neighboring country to attack
 //        Country weakestNeighbor = findWeakestNeighbor(country, game);

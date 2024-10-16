@@ -6,8 +6,8 @@ import models.game.Game;
 public class EconomicStrategy implements  AIActionStrategy {
     @Override
     public void executeAction(Country country, Game game) {
-        System.out.println(country.getName() + " is focusing on economic growth.");
-
+        System.out.println("\n" +  country.getName() + " is focusing on economic growth.");
+        country.getEconomy().calculateIncome();
         // 1. Invest in regional development
 //        Region lowestRegion = findLowestDevelopmentRegion(country);
 //        if (lowestRegion != null && country.canUpgradeRegion(lowestRegion)) {

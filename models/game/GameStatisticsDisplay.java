@@ -15,7 +15,7 @@ public class GameStatisticsDisplay implements Observer {
     @Override
     public void update() {
         // Display the updated game statistics
-        System.out.println("Turn: " + game.getCurrentTurnNumber() + " - " + game.getCurrentCountry().getName());
-        System.out.println("AI turn for " + game.getCurrentCountry().getName());
+        System.out.println("\nTurn: " + game.getCurrentTurnNumber() + " - " + game.getCurrentCountry().getName());
+        System.out.println("\nAI turn for " + game.getCurrentCountry().getName());
     }
 }

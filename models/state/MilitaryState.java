@@ -11,7 +11,7 @@ class MilitaryState implements TurnState {
     public void manageTurn(Game context) {
         Country currentCountry = context.getCurrentCountry();
         if (Objects.requireNonNull(currentCountry.getType()) == CountryType.NEUTRAL) {
-            System.out.println("Military phase for " + currentCountry.getName());
+            System.out.println("\nMilitary phase for " + currentCountry.getName());
             currentCountry.manageMilitary(currentCountry);
         }
     }

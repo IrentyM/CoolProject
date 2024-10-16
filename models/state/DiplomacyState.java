@@ -13,7 +13,7 @@ public class DiplomacyState implements TurnState {
         Country currentCountry = context.getCurrentCountry();
         if (Objects.requireNonNull(currentCountry.getType()) == CountryType.NEUTRAL) {
             Country targetCountry = Game.chooseTargetCountry();
-            System.out.println("Diplomacy phase for " + currentCountry.getName());
+            System.out.println("\nDiplomacy phase for " + currentCountry.getName());
             currentCountry.manageDiplomacy(currentCountry, targetCountry);
         }
 
