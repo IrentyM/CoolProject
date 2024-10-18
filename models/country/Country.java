@@ -1,18 +1,12 @@
 package models.country;
 
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
 import models.AbstractFactory.*;
-import models.general.Diplomacy;
-import models.general.IDiplomacy;
-import models.general.IEconomy;
-import models.general.ILeader;
-import models.general.IMilitary;
-import models.general.IRegion;
-import models.general.IRelationship;
-import models.general.RelationshipManager;
+import models.general.*;
 import models.game.Visitor;
 
 
@@ -134,6 +128,7 @@ public class Country {
     }
     public void manageMilitary(Country myCountry) {
         IMilitary military = myCountry.getMilitary();
+        List<IRegion> regions = myCountry.getRegions();
 
         System.out.println("Manage Military of " + myCountry.getName() + ":");
 
@@ -154,6 +149,29 @@ public class Country {
         int soldierAmount = scanner.nextInt();
 
         if (soldierAmount <= military.getAvailableRecruits()) {
+            System.out.println("Select the region where you want to recruit soldiers:");
+            for (int i = 0; i < regions.size(); i++) {
+                System.out.println((i + 1) + ". " + regions.get(i).getName() + " (Development Level: " + regions.get(i).getDevelopmentLevel() + ")");
+            }
+
+            int regionIndex = -1;
+            boolean validRegion = false;
+
+            while (!validRegion) {
+                try {
+                    regionIndex = scanner.nextInt();
+                    if (regionIndex > 0 && regionIndex <= regions.size()) {
+                        validRegion = true;
+                    } else {
+                        System.out.println("Invalid region selection. Please enter a number between 1 and " + regions.size() + ".");
+                    }
+                } catch (InputMismatchException e) {
+                    System.out.println("Invalid input. Please enter a valid number.");
+                    scanner.next(); // Clear invalid input
+                }
+            }
+
+            IRegion selectedRegion = regions.get(regionIndex - 1);
             boolean validInput = false;
             while (!validInput) {
                 System.out.println("Select type of soldier to recruit (infantry, cavalry): ");
@@ -161,15 +179,15 @@ public class Country {
 
                 // Check if the input matches the expected soldier types
                 if (soldierType.equalsIgnoreCase("infantry") || soldierType.equalsIgnoreCase("cavalry")) {
-                    military.recruitSoldier(soldierType, soldierAmount);
+                    military.recruitSoldier(soldierType, soldierAmount, selectedRegion);
                     validInput = true; // Valid input, break the loop
                 } else {
                     System.out.println("Invalid input. Please enter 'infantry' or 'cavalry'.");
                 }
             }
 
-
             military.spendRecruits(soldierAmount);
+
             // Display updated stats
             System.out.println("Updated Military Stats:");
             System.out.println("Total Soldiers: " + military.getSoldierCount());
@@ -181,10 +199,88 @@ public class Country {
             for (Map.Entry<String, Integer> entry : soldierCounts.entrySet()) {
                 System.out.println(entry.getKey() + ": " + entry.getValue());
             }
+
+            // Ask the player if they want to move soldiers
+            System.out.print("Do you want to move soldiers? (yes/no): ");
+            String moveChoice = scanner.next();
+
+            if (moveChoice.equalsIgnoreCase("yes")) {
+                String soldierTypeToMove = "";
+                System.out.println("Select the type of soldier to move (infantry, cavalry): ");
+                soldierTypeToMove = scanner.next();
+                System.out.println("Regions with soldiers:");
+                for (int i = 0; i < regions.size(); i++) {
+                    IRegion region = regions.get(i);
+                    if (region.getRegionSoldier(soldierTypeToMove) > 0) { // Assuming getSoldierCount returns the total number of soldiers
+                        System.out.println((i + 1) + ". " + region.getName() + " - Soldiers: " + region.getRegionSoldier(soldierTypeToMove));
+                    }
+                }
+
+                // Select the region to move soldiers from
+                System.out.print("Select the region from which to move soldiers: ");
+                regionIndex = -1;
+                validRegion = false;
+                while (!validRegion) {
+                    try {
+                        regionIndex = scanner.nextInt();
+                        if (regionIndex > 0 && regionIndex <= regions.size() && regions.get(regionIndex - 1).getRegionSoldier(soldierTypeToMove) > 0) {
+                            validRegion = true;
+                        } else {
+                            System.out.println("Invalid region selection or no soldiers in the selected region.");
+                        }
+                    } catch (InputMismatchException e) {
+                        System.out.println("Invalid input. Please enter a valid number.");
+                        scanner.next(); // Clear invalid input
+                    }
+                }
+
+                IRegion sourceRegion = regions.get(regionIndex - 1);
+
+                // Select soldier type to move
+                validInput = false;
+                while (!validInput) {;
+                    if (sourceRegion.getRegionSoldier(soldierTypeToMove) > 0) {
+                        validInput = true;
+                    } else {
+                        System.out.println("No soldiers of type " + soldierTypeToMove + " in the selected region.");
+                    }
+                }
+
+                // Select the target region
+                System.out.println("Select the target region to move soldiers to:");
+                for (int i = 0; i < regions.size(); i++) {
+                    System.out.println((i + 1) + ". " + regions.get(i).getName() + " (Development Level: " + regions.get(i).getDevelopmentLevel() + ")");
+                }
+
+                regionIndex = -1;
+                validRegion = false;
+                while (!validRegion) {
+                    try {
+                        regionIndex = scanner.nextInt();
+                        if (regionIndex > 0 && regionIndex <= regions.size()) {
+                            validRegion = true;
+                        } else {
+                            System.out.println("Invalid region selection. Please enter a number between 1 and " + regions.size() + ".");
+                        }
+                    } catch (InputMismatchException e) {
+                        System.out.println("Invalid input. Please enter a valid number.");
+                        scanner.next(); // Clear invalid input
+                    }
+                }
+
+                IRegion targetRegion = regions.get(regionIndex - 1);
+
+                // Move soldiers
+                sourceRegion.moveSoldier(soldierTypeToMove, sourceRegion, targetRegion);
+
+                // Display confirmation
+                System.out.println("Soldiers moved from " + sourceRegion.getName() + " to " + targetRegion.getName());
+            }
         } else {
             System.out.println("Not enough recruits available.");
         }
     }
+
     public void manageEconomy(Country myCountry) {
         Scanner scanner = new Scanner(System.in);
 
@@ -305,5 +401,12 @@ public class Country {
 
     public void setType(CountryType type) {
         this.type = type;
+    }
+
+    public boolean isEnemy(CountryType type) {
+        if (this.type == type) {
+            return true;
+        }
+        return false;
     }
 }

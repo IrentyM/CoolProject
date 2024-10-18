@@ -1,7 +1,11 @@
 package models.factory;
+
+import models.general.IRegion;
+import models.general.Region;
+
 public class SoldierFactory implements ISoldierFactory {
     @Override
-    public Soldier createSoldier(String type, int amount) {
+    public Soldier createSoldier(String type, int amount, IRegion region) {
         switch (type.toLowerCase()) {
             case "infantry":
                 return new Infantry(amount);  // Pass amount to Infantry

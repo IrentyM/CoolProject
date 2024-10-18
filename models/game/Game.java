@@ -25,7 +25,7 @@ public class Game implements Subject {
     private List<Observer> observers = new ArrayList<>();
     private static ArrayList<Country> countries; // List of countries in the game
     private Scanner scanner; // Scanner for user input
-    private static Country myCountry;
+    public static Country myCountry;
     private int currentCountryIndex = 0;
     private boolean gameOver = false;
     private int turnNumber = 1;

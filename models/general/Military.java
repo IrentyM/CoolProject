@@ -26,14 +26,15 @@ public class Military implements IMilitary {
         this.soldierFactory = new SoldierFactory(); // Factory for soldier creation
     }
 
-    public int recruitSoldier(String type, int amount) {
-        Soldier newSoldier = soldierFactory.createSoldier(type, amount);
+    public int recruitSoldier(String type, int amount, IRegion region) {
+        Soldier newSoldier = soldierFactory.createSoldier(type, amount, region);
         if (recruits >= newSoldier.getCost()) {
             recruits -= newSoldier.getCost();
             for (int i = 0; i < amount; i++) {
                 army.add(newSoldier); // Add the soldiers to the army
             }
-            System.out.println(amount + " " + newSoldier.getType() + "(s) recruited!");
+            region.addSoldiers(type,amount);
+            System.out.println(amount + " " + newSoldier.getType() + "(s) recruited in" + region.getName());
         } else {
             System.out.println("Not enough recruits to create " + newSoldier.getType());
         }
@@ -69,6 +70,8 @@ public class Military implements IMilitary {
     public void setMilitaryPoints(int militaryPoints) {
         this.militaryPoints = militaryPoints;
     }
+
+
 
     @Override
     public void recruitSoldiers(Country targetCountry, int numberOfRecruits) {

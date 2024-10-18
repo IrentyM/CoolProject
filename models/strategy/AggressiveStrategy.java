@@ -2,6 +2,11 @@ package models.strategy;
 
 import models.country.Country;
 import models.game.Game;
+import models.general.IRegion;
+
+import java.util.List;
+
+import static models.game.Game.myCountry;
 
 public class AggressiveStrategy implements  AIActionStrategy {
     @Override
@@ -10,7 +15,9 @@ public class AggressiveStrategy implements  AIActionStrategy {
 
         // 1. Recruit soldiers if possible
         if (country.getMilitary().canRecruitSoldiers()) {
-            int recruits = country.getMilitary().recruitSoldier("infantry",100); // Method to recruit based on available resources
+            List<IRegion> regions = myCountry.getRegions();
+            IRegion selectedRegion = regions.get(1);
+            int recruits = country.getMilitary().recruitSoldier("infantry",100,selectedRegion); // Method to recruit based on available resources
             System.out.println(country.getName() + " recruits " + recruits + " soldiers.");
         }
         country.getEconomy().calculateIncome();
