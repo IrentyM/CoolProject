@@ -16,5 +16,7 @@ public interface IRegion {
 
     void removeSoldiers(String type, int i);
     int getRegionSoldier(String soldierType);
-    boolean moveSoldier(String soldier, IRegion currentRegion, IRegion targetRegion);
+    boolean moveSoldier(String soldier, IRegion currentRegion, IRegion targetRegion, Country attacker, Country defender);
+
+    void setOwner(Country country);
 }

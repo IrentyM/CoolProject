@@ -62,27 +62,74 @@ public class Region implements IRegion, Cloneable {
     public void addSoldiers(String soldierType, int count) {
         soldiers.put(soldierType, soldiers.getOrDefault(soldierType, 0) + count);
     }
+    public boolean conquerRegion(Country attacker, IRegion targetRegion, Country defender, String soldierType) {
+        // Get the army size of both the attacker and the defender in the target region
+        int attackerArmySize = attacker.getRegionSoldier(targetRegion, soldierType);
+        int defenderArmySize = defender.getRegionSoldier(targetRegion, soldierType);
 
-    public boolean moveSoldier(String soldier, IRegion currentRegion, IRegion targetRegion) {
-        if (targetRegion.isNeutral() || targetRegion.isOwnedByAlly(getOwner())) {
+        System.out.println(attacker.getName() + " army size: " + attackerArmySize);
+        System.out.println(defender.getName() + " army size: " + defenderArmySize);
 
-            currentRegion.removeSoldiers(soldier, getRegionSoldier(soldier));
+        // Check who wins the battle
+        if (attackerArmySize > defenderArmySize) {
+            // Attacker wins the battle and conquers the region
+            System.out.println(attacker.getName() + " conquers the region: " + targetRegion.getName());
 
+            // Remove region from the defender
+            defender.removeRegion(targetRegion);
 
+            // Add region to the attacker's list of regions
+            attacker.addRegion(targetRegion);
 
-            // Add soldier to the target region
-            targetRegion.addSoldiers(soldier, getRegionSoldier(soldier));
+            // Update region ownership
+            targetRegion.setOwner(attacker);
+
+            // After the battle, the loser loses all soldiers and the winner loses soldiers equal to the size of the losing army
+            int soldiersLost = defenderArmySize;
+            attacker.reduceSoldiers(soldierType, soldiersLost, targetRegion);
+
+            System.out.println("Remaining " + soldierType + " soldiers for " + attacker.getName() + ": " + attacker.getRegionSoldier(targetRegion, soldierType));
+
+            return true;
+        } else if (attackerArmySize < defenderArmySize) {
+            // Defender wins the battle, attacker loses all soldiers in the region
+            System.out.println(defender.getName() + " defends the region: " + targetRegion.getName());
+
+            // The attacker loses all soldiers in the battle
+            attacker.removeSoldiers(targetRegion, soldierType);
+
+            return false;
+        } else {
+            // It's a draw, both sides lose their soldiers (equal size)
+            System.out.println("Both sides lost their soldiers in a draw!");
+
+            attacker.removeSoldiers(targetRegion, soldierType);
+            defender.removeSoldiers(targetRegion, soldierType);
+
+            return false;
+        }
+    }
+
+    public boolean moveSoldier(String soldier, IRegion currentRegion, IRegion targetRegion, Country attacker, Country defender) {
+        if (targetRegion.isNeutral() || targetRegion.isOwnedByAlly(attacker)) {
+            currentRegion.removeSoldiers(soldier, currentRegion.getRegionSoldier(soldier));
+            targetRegion.addSoldiers(soldier, currentRegion.getRegionSoldier(soldier));
             System.out.println("Soldier moved to " + targetRegion.getName() + ".");
             return true;
-        } else if (targetRegion.isEnemy(getOwner())) {
-            currentRegion.removeSoldiers(soldier, getRegionSoldier(soldier));
+        } else if (targetRegion.isEnemy(defender)) {
+            currentRegion.removeSoldiers(soldier, currentRegion.getRegionSoldier(soldier));
+            targetRegion.addSoldiers(soldier, currentRegion.getRegionSoldier(soldier));
 
+            System.out.println("Soldier moved to enemy region: " + targetRegion.getName() + " for battle.");
 
-            // Add soldier to the target region
-            targetRegion.addSoldiers(soldier, getRegionSoldier(soldier));
-                System.out.println("Soldier moved to enemy region: " + targetRegion.getName() + " for battle.");
-                return true;
-
+            // Trigger battle and potential conquest
+            boolean conquered = conquerRegion(attacker, targetRegion, defender, soldier);
+            if (conquered) {
+                System.out.println(attacker.getName() + " has conquered " + targetRegion.getName() + "!");
+            } else {
+                System.out.println(attacker.getName() + " failed to conquer " + targetRegion.getName() + ".");
+            }
+            return true;
         } else {
             System.out.println("Cannot move soldier. Invalid target region.");
             return false;

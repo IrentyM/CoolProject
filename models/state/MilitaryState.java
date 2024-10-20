@@ -1,5 +1,6 @@
 package models.state;
 
+import java.util.List;
 import java.util.Objects;
 
 import models.country.Country;
@@ -10,9 +11,10 @@ class MilitaryState implements TurnState {
     @Override
     public void manageTurn(Game context) {
         Country currentCountry = context.getCurrentCountry();
+        List<Country> allCountries = context.getAllCountries();
         if (Objects.requireNonNull(currentCountry.getType()) == CountryType.NEUTRAL) {
             System.out.println("\nMilitary phase for " + currentCountry.getName());
-            currentCountry.manageMilitary(currentCountry);
+            currentCountry.manageMilitary(currentCountry, allCountries);
         }
     }
 

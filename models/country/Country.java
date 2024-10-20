@@ -126,7 +126,7 @@ public class Country {
 
 
     }
-    public void manageMilitary(Country myCountry) {
+    public void manageMilitary(Country myCountry, List<Country> allCountries) {
         IMilitary military = myCountry.getMilitary();
         List<IRegion> regions = myCountry.getRegions();
 
@@ -211,7 +211,7 @@ public class Country {
                 System.out.println("Regions with soldiers:");
                 for (int i = 0; i < regions.size(); i++) {
                     IRegion region = regions.get(i);
-                    if (region.getRegionSoldier(soldierTypeToMove) > 0) { // Assuming getSoldierCount returns the total number of soldiers
+                    if (region.getRegionSoldier(soldierTypeToMove) > 0) {
                         System.out.println((i + 1) + ". " + region.getName() + " - Soldiers: " + region.getRegionSoldier(soldierTypeToMove));
                     }
                 }
@@ -236,31 +236,23 @@ public class Country {
 
                 IRegion sourceRegion = regions.get(regionIndex - 1);
 
-                // Select soldier type to move
-                validInput = false;
-                while (!validInput) {;
-                    if (sourceRegion.getRegionSoldier(soldierTypeToMove) > 0) {
-                        validInput = true;
-                    } else {
-                        System.out.println("No soldiers of type " + soldierTypeToMove + " in the selected region.");
+                // Select the target country
+                System.out.println("Select the target country to move soldiers to:");
+                for (int i = 0; i < allCountries.size(); i++) {
+                    if (!allCountries.get(i).equals(myCountry)) {
+                        System.out.println((i + 1) + ". " + allCountries.get(i).getName());
                     }
                 }
 
-                // Select the target region
-                System.out.println("Select the target region to move soldiers to:");
-                for (int i = 0; i < regions.size(); i++) {
-                    System.out.println((i + 1) + ". " + regions.get(i).getName() + " (Development Level: " + regions.get(i).getDevelopmentLevel() + ")");
-                }
-
-                regionIndex = -1;
-                validRegion = false;
-                while (!validRegion) {
+                int countryIndex = -1;
+                boolean validCountry = false;
+                while (!validCountry) {
                     try {
-                        regionIndex = scanner.nextInt();
-                        if (regionIndex > 0 && regionIndex <= regions.size()) {
-                            validRegion = true;
+                        countryIndex = scanner.nextInt();
+                        if (countryIndex > 0 && countryIndex <= allCountries.size() && !allCountries.get(countryIndex - 1).equals(myCountry)) {
+                            validCountry = true;
                         } else {
-                            System.out.println("Invalid region selection. Please enter a number between 1 and " + regions.size() + ".");
+                            System.out.println("Invalid country selection.");
                         }
                     } catch (InputMismatchException e) {
                         System.out.println("Invalid input. Please enter a valid number.");
@@ -268,18 +260,44 @@ public class Country {
                     }
                 }
 
-                IRegion targetRegion = regions.get(regionIndex - 1);
+                Country targetCountry = allCountries.get(countryIndex - 1);
+
+                // Select the target region within the chosen country
+                System.out.println("Select the target region to move soldiers to within " + targetCountry.getName() + ":");
+                List<IRegion> targetRegions = targetCountry.getRegions();
+                for (int i = 0; i < targetRegions.size(); i++) {
+                    System.out.println((i + 1) + ". " + targetRegions.get(i).getName() + " (Development Level: " + targetRegions.get(i).getDevelopmentLevel() + ")");
+                }
+
+                regionIndex = -1;
+                validRegion = false;
+                while (!validRegion) {
+                    try {
+                        regionIndex = scanner.nextInt();
+                        if (regionIndex > 0 && regionIndex <= targetRegions.size()) {
+                            validRegion = true;
+                        } else {
+                            System.out.println("Invalid region selection. Please enter a number between 1 and " + targetRegions.size() + ".");
+                        }
+                    } catch (InputMismatchException e) {
+                        System.out.println("Invalid input. Please enter a valid number.");
+                        scanner.next(); // Clear invalid input
+                    }
+                }
+
+                IRegion targetRegion = targetRegions.get(regionIndex - 1);
 
                 // Move soldiers
-                sourceRegion.moveSoldier(soldierTypeToMove, sourceRegion, targetRegion);
+                sourceRegion.moveSoldier(soldierTypeToMove, sourceRegion, targetRegion,myCountry,targetCountry);
 
                 // Display confirmation
-                System.out.println("Soldiers moved from " + sourceRegion.getName() + " to " + targetRegion.getName());
+                System.out.println("Soldiers moved from " + sourceRegion.getName() + " to " + targetRegion.getName() + " in " + targetCountry.getName());
             }
         } else {
             System.out.println("Not enough recruits available.");
         }
     }
+
 
     public void manageEconomy(Country myCountry) {
         Scanner scanner = new Scanner(System.in);
@@ -409,4 +427,66 @@ public class Country {
         }
         return false;
     }
+
+    public int getRegionSoldier(IRegion region, String soldierType) {
+        // Ensure that the region belongs to the country
+        if (getRegions().contains(region)) {
+            // Fetch the number of soldiers of the specified type in the given region
+            return region.getRegionSoldier(soldierType);
+        } else {
+            System.out.println("This region does not belong to the country.");
+            return 0;
+        }
+    }
+
+    public void removeRegion(IRegion region) {
+        // Check if the region belongs to the country
+        if (getRegions().contains(region)) {
+            getRegions().remove(region);
+            System.out.println("Region " + region.getName() + " has been removed from " + getName() + ".");
+        } else {
+            System.out.println("The region " + region.getName() + " does not belong to " + getName() + ".");
+        }
+    }
+
+    public void addRegion(IRegion region) {
+        // Check if the region is not already part of the country's regions
+        if (!getRegions().contains(region)) {
+            getRegions().add(region);
+            System.out.println("Region " + region.getName() + " has been added to " + getName() + ".");
+            // Update the region's owner to this country
+            region.setOwner(this);
+        } else {
+            System.out.println("The region " + region.getName() + " is already controlled by " + getName() + ".");
+        }
+    }
+
+    public void removeSoldiers(IRegion region,String soldierType) {
+        // Get the current count of the specified type of soldier
+        int currentSoldierCount = region.getRegionSoldier(soldierType);
+
+        if (currentSoldierCount > 0) {
+            // Remove all soldiers of the given type from the region
+            region.removeSoldiers(soldierType, currentSoldierCount);
+            System.out.println("All " + currentSoldierCount + " " + soldierType + " removed from region " + region.getName() + ".");
+        } else {
+            System.out.println("No " + soldierType + " soldiers found in region " + region.getName() + ".");
+        }
+    }
+
+    public void reduceSoldiers(String soldierType, int amount, IRegion region) {
+        // Check if the region has the specified type of soldiers
+        int currentSoldierCount = region.getRegionSoldier(soldierType);
+
+        if (currentSoldierCount >= amount) {
+            // Remove the specified amount of soldiers from the region
+            region.removeSoldiers(soldierType, amount);
+            System.out.println(amount + " " + soldierType + " removed from region " + region.getName() + ".");
+        } else {
+            // If there are fewer soldiers than the amount, remove all soldiers of that type
+            region.removeSoldiers(soldierType, currentSoldierCount);
+            System.out.println("Only " + currentSoldierCount + " " + soldierType + " removed from region " + region.getName() + " because there were not enough soldiers.");
+        }
+    }
+
 }
