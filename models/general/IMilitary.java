@@ -9,7 +9,7 @@ public interface IMilitary {
     int getAvailableRecruits();
     int getSoldiers();
     void setMilitaryPoints(int militaryPoints);
-    int recruitSoldier(String type, int amount,IRegion region);
+    int recruitSoldier(String type, int amount);
     Map<String, Integer> getSoldierCount();
     void spendRecruits(int amount) ;// Returns a map of soldier type and count
 

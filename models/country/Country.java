@@ -1,12 +1,18 @@
 package models.country;
 
-import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
 import models.AbstractFactory.*;
-import models.general.*;
+import models.general.Diplomacy;
+import models.general.IDiplomacy;
+import models.general.IEconomy;
+import models.general.ILeader;
+import models.general.IMilitary;
+import models.general.IRegion;
+import models.general.IRelationship;
+import models.general.RelationshipManager;
 import models.game.Visitor;
 
 
@@ -20,6 +26,16 @@ public class Country {
     private ILeader leader;
     private List<IRegion> regions;
     private Scanner scanner;
+
+    BuildingFactory castleFactory = new CastleFactory();
+    IBuilding castle = castleFactory.createBuilding();
+    BuildingFactory farmFactory = new FarmFactory();
+    IBuilding farm = farmFactory.createBuilding();
+    BuildingFactory marketFactory = new MarketFactory();
+    IBuilding market = marketFactory.createBuilding();
+    Expression addFarmIncome = new AddIncomeToBuildingExpression(farm);
+    Expression addMarketIncome = new AddIncomeToBuildingExpression(market);
+    Expression addCastleIncome = new AddIncomeToBuildingExpression(castle);
 
     // Constructor is now private to enforce Factory Method usage
     private Country(String name, ILeader leader, IEconomy economy, IMilitary military, List<IRegion> regions,CountryType type) {
@@ -126,9 +142,8 @@ public class Country {
 
 
     }
-    public void manageMilitary(Country myCountry, List<Country> allCountries) {
+    public void manageMilitary(Country myCountry) {
         IMilitary military = myCountry.getMilitary();
-        List<IRegion> regions = myCountry.getRegions();
 
         System.out.println("Manage Military of " + myCountry.getName() + ":");
 
@@ -149,45 +164,11 @@ public class Country {
         int soldierAmount = scanner.nextInt();
 
         if (soldierAmount <= military.getAvailableRecruits()) {
-            System.out.println("Select the region where you want to recruit soldiers:");
-            for (int i = 0; i < regions.size(); i++) {
-                System.out.println((i + 1) + ". " + regions.get(i).getName() + " (Development Level: " + regions.get(i).getDevelopmentLevel() + ")");
-            }
+            System.out.println("Select type of soldier to recruit (infantry, cavalry): ");
+            String soldierType = scanner.next();
 
-            int regionIndex = -1;
-            boolean validRegion = false;
-
-            while (!validRegion) {
-                try {
-                    regionIndex = scanner.nextInt();
-                    if (regionIndex > 0 && regionIndex <= regions.size()) {
-                        validRegion = true;
-                    } else {
-                        System.out.println("Invalid region selection. Please enter a number between 1 and " + regions.size() + ".");
-                    }
-                } catch (InputMismatchException e) {
-                    System.out.println("Invalid input. Please enter a valid number.");
-                    scanner.next(); // Clear invalid input
-                }
-            }
-
-            IRegion selectedRegion = regions.get(regionIndex - 1);
-            boolean validInput = false;
-            while (!validInput) {
-                System.out.println("Select type of soldier to recruit (infantry, cavalry): ");
-                String soldierType = scanner.next();
-
-                // Check if the input matches the expected soldier types
-                if (soldierType.equalsIgnoreCase("infantry") || soldierType.equalsIgnoreCase("cavalry")) {
-                    military.recruitSoldier(soldierType, soldierAmount, selectedRegion);
-                    validInput = true; // Valid input, break the loop
-                } else {
-                    System.out.println("Invalid input. Please enter 'infantry' or 'cavalry'.");
-                }
-            }
-
+            military.recruitSoldier(soldierType, soldierAmount);
             military.spendRecruits(soldierAmount);
-
             // Display updated stats
             System.out.println("Updated Military Stats:");
             System.out.println("Total Soldiers: " + military.getSoldierCount());
@@ -199,213 +180,49 @@ public class Country {
             for (Map.Entry<String, Integer> entry : soldierCounts.entrySet()) {
                 System.out.println(entry.getKey() + ": " + entry.getValue());
             }
-
-            // Ask the player if they want to move soldiers
-            System.out.print("Do you want to move soldiers? (yes/no): ");
-            String moveChoice = scanner.next();
-
-            if (moveChoice.equalsIgnoreCase("yes")) {
-                String soldierTypeToMove = "";
-                System.out.println("Select the type of soldier to move (infantry, cavalry): ");
-                soldierTypeToMove = scanner.next();
-                System.out.println("Regions with soldiers:");
-                for (int i = 0; i < regions.size(); i++) {
-                    IRegion region = regions.get(i);
-                    if (region.getRegionSoldier(soldierTypeToMove) > 0) {
-                        System.out.println((i + 1) + ". " + region.getName() + " - Soldiers: " + region.getRegionSoldier(soldierTypeToMove));
-                    }
-                }
-
-                // Select the region to move soldiers from
-                System.out.print("Select the region from which to move soldiers: ");
-                regionIndex = -1;
-                validRegion = false;
-                while (!validRegion) {
-                    try {
-                        regionIndex = scanner.nextInt();
-                        if (regionIndex > 0 && regionIndex <= regions.size() && regions.get(regionIndex - 1).getRegionSoldier(soldierTypeToMove) > 0) {
-                            validRegion = true;
-                        } else {
-                            System.out.println("Invalid region selection or no soldiers in the selected region.");
-                        }
-                    } catch (InputMismatchException e) {
-                        System.out.println("Invalid input. Please enter a valid number.");
-                        scanner.next(); // Clear invalid input
-                    }
-                }
-
-                IRegion sourceRegion = regions.get(regionIndex - 1);
-
-                // Select the target country
-                System.out.println("Select the target country to move soldiers to:");
-                for (int i = 0; i < allCountries.size(); i++) {
-                    if (!allCountries.get(i).equals(myCountry)) {
-                        System.out.println((i + 1) + ". " + allCountries.get(i).getName());
-                    }
-                }
-
-                int countryIndex = -1;
-                boolean validCountry = false;
-                while (!validCountry) {
-                    try {
-                        countryIndex = scanner.nextInt();
-                        if (countryIndex > 0 && countryIndex <= allCountries.size() && !allCountries.get(countryIndex - 1).equals(myCountry)) {
-                            validCountry = true;
-                        } else {
-                            System.out.println("Invalid country selection.");
-                        }
-                    } catch (InputMismatchException e) {
-                        System.out.println("Invalid input. Please enter a valid number.");
-                        scanner.next(); // Clear invalid input
-                    }
-                }
-
-                Country targetCountry = allCountries.get(countryIndex - 1);
-
-                // Select the target region within the chosen country
-                System.out.println("Select the target region to move soldiers to within " + targetCountry.getName() + ":");
-                List<IRegion> targetRegions = targetCountry.getRegions();
-                for (int i = 0; i < targetRegions.size(); i++) {
-                    System.out.println((i + 1) + ". " + targetRegions.get(i).getName() + " (Development Level: " + targetRegions.get(i).getDevelopmentLevel() + ")");
-                }
-
-                regionIndex = -1;
-                validRegion = false;
-                while (!validRegion) {
-                    try {
-                        regionIndex = scanner.nextInt();
-                        if (regionIndex > 0 && regionIndex <= targetRegions.size()) {
-                            validRegion = true;
-                        } else {
-                            System.out.println("Invalid region selection. Please enter a number between 1 and " + targetRegions.size() + ".");
-                        }
-                    } catch (InputMismatchException e) {
-                        System.out.println("Invalid input. Please enter a valid number.");
-                        scanner.next(); // Clear invalid input
-                    }
-                }
-
-                IRegion targetRegion = targetRegions.get(regionIndex - 1);
-
-                // Move soldiers
-                sourceRegion.moveSoldier(soldierTypeToMove, sourceRegion, targetRegion,myCountry,targetCountry);
-
-                // Display confirmation
-                System.out.println("Soldiers moved from " + sourceRegion.getName() + " to " + targetRegion.getName() + " in " + targetCountry.getName());
-            }
         } else {
             System.out.println("Not enough recruits available.");
         }
     }
-
-
     public void manageEconomy(Country myCountry) {
+        int castleResult = addCastleIncome.interpret();
+        int marketResult = addMarketIncome.interpret();
+        int farmResult = addFarmIncome.interpret();
+
         Scanner scanner = new Scanner(System.in);
-
-        BuildingFactory castleFactory = new CastleFactory();
-        IBuilding castle = castleFactory.createBuilding();
-        castle.addMoney(20); // Adding money to the castle
-
-        BuildingFactory farmFactory = new FarmFactory();
-        IBuilding farm = farmFactory.createBuilding();
-        farm.addMoney(10); // Adding money to the farm
-
-        BuildingFactory marketFactory = new MarketFactory();
-        IBuilding market = marketFactory.createBuilding();
-
+        // Adding money to the market
         System.out.println("Manage Economy of a Country:");
         myCountry.getEconomy().calculateIncome(); // Calculating income
         System.out.println("Current Money: " + myCountry.getEconomy().getMoney(myCountry) + " ducats");
 
         System.out.println("\nManage Buildings of a Country:");
         System.out.println("1. Adding money to the building");
-        System.out.println("2. Take money from buildings");
+        System.out.println("2. Take Income from buildings");
         System.out.println("3. Exit");
         int choice = scanner.nextInt();
 
         switch (choice) {
             case 1:
-                System.out.println("Select building to add money:");
-                System.out.println("1. Castle");
-                System.out.println("2. Farm");
-                System.out.println("3. Market");
-                int buildingChoice = scanner.nextInt();
                 System.out.println("Enter amount to add:");
                 int amountToAdd = scanner.nextInt();
-
-                switch (buildingChoice) {
-                    case 1:
-                        castle.addMoney(amountToAdd);
-                        myCountry.getEconomy().spentMoney(amountToAdd);
-                        System.out.println(amountToAdd + " ducats added to Castle.");
-                        break;
-                    case 2:
-                        farm.addMoney(amountToAdd);
-                        myCountry.getEconomy().spentMoney(amountToAdd);
-                        System.out.println(amountToAdd + " ducats added to Farm.");
-                        break;
-                    case 3:
-                        market.addMoney(amountToAdd);
-                        myCountry.getEconomy().spentMoney(amountToAdd);
-                        System.out.println(amountToAdd + " ducats added to Market.");
-                        break;
-                    default:
-                        System.out.println("Invalid building choice.");
-                        break;
-                }
-                break;
+                myCountry.getEconomy().subtractMoney(amountToAdd / 3);
+                castle.addMoneytoBuilding(amountToAdd / 3);
+                market.addMoneytoBuilding(amountToAdd / 3);
+                farm.addMoneytoBuilding(amountToAdd / 3);
 
             case 2:
-                System.out.println("Select building to take money from:");
-                System.out.println("1. Castle");
-                System.out.println("2. Farm");
-                System.out.println("3. Market");
-                buildingChoice = scanner.nextInt();
-                System.out.println("Enter amount to take:");
-                int amountToTake = scanner.nextInt();
-
-                switch (buildingChoice) {
-                    case 1:
-                        if (castle.getIncome() >= amountToTake) {
-                            castle.addMoney(-amountToTake); // We extract money
-                            System.out.println(amountToTake + " ducats taken from Castle.");
-                            myCountry.getEconomy().addMoney(amountToTake);
-                        } else {
-                            System.out.println("Not enough money in Castle.");
-                        }
-                        break;
-                    case 2:
-                        if (farm.getIncome() >= amountToTake) {
-                            farm.addMoney(-amountToTake); // We extract money
-                            System.out.println(amountToTake + " ducats taken from Farm.");
-                            myCountry.getEconomy().addMoney(amountToTake);
-                        } else {
-                            System.out.println("Not enough money in Farm.");
-                        }
-                        break;
-                    case 3:
-                        if (market.getIncome() >= amountToTake) {
-                            market.addMoney(-amountToTake); // We extract money
-                            System.out.println(amountToTake + " ducats taken from Market.");
-                            myCountry.getEconomy().addMoney(amountToTake);
-                        } else {
-                            System.out.println("Not enough money in Market.");
-                        }
-                        break;
-                    default:
-                        System.out.println("Invalid building choice.");
-                        break;
-                }
-                break;
-
+                myCountry.getEconomy().addMoney(castle.getIncome()+market.getIncome()+farm.getIncome());
             case 3:
                 System.out.println("Exiting...");
                 break;
-
             default:
                 System.out.println("Invalid choice, please try again.");
                 break;
+
+
         }
+
+        System.out.println("Current Money: " + myCountry.getEconomy().getMoney(myCountry) + " ducats");
     }
     public void accept(Visitor visitor) {
         visitor.visit(this);
@@ -415,78 +232,6 @@ public class Country {
 
     public CountryType getType() {
         return type;
-    }
-
-    public void setType(CountryType type) {
-        this.type = type;
-    }
-
-    public boolean isEnemy(CountryType type) {
-        if (this.type == type) {
-            return true;
-        }
-        return false;
-    }
-
-    public int getRegionSoldier(IRegion region, String soldierType) {
-        // Ensure that the region belongs to the country
-        if (getRegions().contains(region)) {
-            // Fetch the number of soldiers of the specified type in the given region
-            return region.getRegionSoldier(soldierType);
-        } else {
-            System.out.println("This region does not belong to the country.");
-            return 0;
-        }
-    }
-
-    public void removeRegion(IRegion region) {
-        // Check if the region belongs to the country
-        if (getRegions().contains(region)) {
-            getRegions().remove(region);
-            System.out.println("Region " + region.getName() + " has been removed from " + getName() + ".");
-        } else {
-            System.out.println("The region " + region.getName() + " does not belong to " + getName() + ".");
-        }
-    }
-
-    public void addRegion(IRegion region) {
-        // Check if the region is not already part of the country's regions
-        if (!getRegions().contains(region)) {
-            getRegions().add(region);
-            System.out.println("Region " + region.getName() + " has been added to " + getName() + ".");
-            // Update the region's owner to this country
-            region.setOwner(this);
-        } else {
-            System.out.println("The region " + region.getName() + " is already controlled by " + getName() + ".");
-        }
-    }
-
-    public void removeSoldiers(IRegion region,String soldierType) {
-        // Get the current count of the specified type of soldier
-        int currentSoldierCount = region.getRegionSoldier(soldierType);
-
-        if (currentSoldierCount > 0) {
-            // Remove all soldiers of the given type from the region
-            region.removeSoldiers(soldierType, currentSoldierCount);
-            System.out.println("All " + currentSoldierCount + " " + soldierType + " removed from region " + region.getName() + ".");
-        } else {
-            System.out.println("No " + soldierType + " soldiers found in region " + region.getName() + ".");
-        }
-    }
-
-    public void reduceSoldiers(String soldierType, int amount, IRegion region) {
-        // Check if the region has the specified type of soldiers
-        int currentSoldierCount = region.getRegionSoldier(soldierType);
-
-        if (currentSoldierCount >= amount) {
-            // Remove the specified amount of soldiers from the region
-            region.removeSoldiers(soldierType, amount);
-            System.out.println(amount + " " + soldierType + " removed from region " + region.getName() + ".");
-        } else {
-            // If there are fewer soldiers than the amount, remove all soldiers of that type
-            region.removeSoldiers(soldierType, currentSoldierCount);
-            System.out.println("Only " + currentSoldierCount + " " + soldierType + " removed from region " + region.getName() + " because there were not enough soldiers.");
-        }
     }
 
 }

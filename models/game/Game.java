@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import models.EventTemplate.EconomicBoostEvent;
-import models.EventTemplate.GameEvent;
-import models.EventTemplate.WarDeclarationEvent;
 import models.country.Country;
 import models.country.CountryType;
 import models.general.Economy;
@@ -18,14 +15,13 @@ import models.general.Military;
 import models.general.Region;
 import models.state.DiplomacyState;
 import models.state.EndTurnState;
-import models.state.EventState;
 import models.state.TurnState;
 
 public class Game implements Subject {
     private List<Observer> observers = new ArrayList<>();
     private static ArrayList<Country> countries; // List of countries in the game
     private Scanner scanner; // Scanner for user input
-    public static Country myCountry;
+    private static Country myCountry;
     private int currentCountryIndex = 0;
     private boolean gameOver = false;
     private int turnNumber = 1;
@@ -35,9 +31,7 @@ public class Game implements Subject {
         this.countries = new ArrayList<>();
         this.scanner = new Scanner(System.in);
         initializeGame(); // Initialize game state
-        choosePlayerCountry();
-        moveMyCountryToFirst();
-        this.state = new EventState();  // Start with Diplomacy State
+        this.state = new DiplomacyState();  // Start with Diplomacy State
     }
 
     // Initialize game state and countries
@@ -87,7 +81,7 @@ public class Game implements Subject {
         IMilitary kokandMilitary = new Military(3);
 
         // Initialize countries
-        countries.add(Country.createCountry("Russian Empire", peterI, russianEconomy, russianMilitary, russianRegions, CountryType.DIPLOMATIC));
+        countries.add(Country.createCountry("Russian Empire", peterI, russianEconomy, russianMilitary, russianRegions, CountryType.NEUTRAL));
         countries.add(Country.createCountry("Qing Dynasty", yongzheng, qingEconomy, qingMilitary, qingRegions , CountryType.ECONOMIC));
         countries.add(Country.createCountry("Zhungar Khanate", tsewang, zhungarEconomy, zhungarMilitary, zhungarRegions, CountryType.AGGRESSIVE));
         countries.add(Country.createCountry("Middle Juz", shahMohammed, middleJuzEconomy, middleJuzMilitary, middleJuzRegions, CountryType.ECONOMIC));
@@ -199,28 +193,6 @@ public class Game implements Subject {
         regions.add(new Region("Andijan", 4, "Andijan"));
         return regions;
     }
-    public void initializeGameEvents() {
-        Country russia = getCountryByName("Russian Empire");
-        Country zhungars = getCountryByName("Zhungar Khanate");
-
-        // Trigger a war declaration event
-        if (turnNumber == 2){
-            System.out.println("\nEvent:");
-            System.out.println("Russian Empire diplomats was killed by Zhungars army");
-            System.out.println("War will come?");
-            GameEvent warEvent = new WarDeclarationEvent(russia, zhungars);
-            warEvent.triggerEvent();
-        }
-
-
-        // Trigger an economic boost event
-        Country middleJuz = getCountryByName("Middle Juz");
-        if (turnNumber == 3){
-            GameEvent economicBoost = new EconomicBoostEvent(middleJuz);
-            economicBoost.triggerEvent();
-        }
-
-    }
     public void setState(TurnState state) {
         this.state = state;
     }
@@ -239,7 +211,7 @@ public class Game implements Subject {
             state.manageTurn(this);
             state.nextState(this);
         }
-        state.manageTurn(this);
+
         if (state instanceof EndTurnState) {
             calculateEconomicStrength();
             startNewTurn();  // Reset for the new turn
@@ -247,19 +219,16 @@ public class Game implements Subject {
     }
 
 
-
-
-
     public void startNewTurn() {
         turnNumber++;
         currentCountryIndex = 0;  // Reset to the first country
-        state = new EventState();  // Reset state to the first phase
+        state = new DiplomacyState();  // Reset state to the first phase
     }
 
     public void moveToNextCountry() {
         currentCountryIndex++;
         if (currentCountryIndex < countries.size()) {
-            state = new EventState();  // Start with Diplomacy for the next country
+            state = new DiplomacyState();  // Start with Diplomacy for the next country
         }
     }
 
@@ -273,23 +242,6 @@ public class Game implements Subject {
         for (int i = 0; i < countries.size(); i++) {
             System.out.println(i + 1 + ". " + countries.get(i).getName());
         }
-    }
-    public void choosePlayerCountry() {
-        System.out.println("Choose a country to play:");
-
-        // Display available countries to the player
-        for (int i = 0; i < countries.size(); i++) {
-            System.out.println((i + 1) + ". " + countries.get(i).getName());
-        }
-
-        // Get player's choice
-        int choice = scanner.nextInt();
-        myCountry = countries.get(choice - 1); // Assign the chosen country to myCountry
-
-        // Set the chosen country type to neutral, indicating it's controlled by the player
-        myCountry.setType(CountryType.NEUTRAL);
-
-        System.out.println("You have chosen " + myCountry.getName() + " as your country.");
     }
     public static Country chooseTargetCountry() {
         Scanner scanner = new Scanner(System.in);
@@ -306,13 +258,7 @@ public class Game implements Subject {
         int choice = scanner.nextInt();
         return availableCountries.get(choice - 1); // Return the chosen country for diplomacy
     }
-    private void moveMyCountryToFirst() {
-        // Remove the chosen country from its current position
-        countries.remove(myCountry);
 
-        // Add it back at the first position
-        countries.add(0, myCountry);
-    }
     public void endGame() {
         System.out.println("\nGame Over.");
         System.out.println("Final statistics:");
@@ -386,16 +332,7 @@ public class Game implements Subject {
         }
 //       System.out.println("Total economic strength: " + ((EconomicStrengthVisitor) economicVisitor).getTotalStrength());
     }
-    public Country getCountryByName(String name) {
-        // Search through the list of countries for a match
-        for (Country country : countries) {
-            if (country.getName().equalsIgnoreCase(name)) {
-                return country;
-            }
-        }
-        // If no country is found, return null or throw an exception
-        return null;
-    }
+
 
 
 }

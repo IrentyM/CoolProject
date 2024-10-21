@@ -11,7 +11,7 @@ class EconomyState implements TurnState {
     public void manageTurn(Game context) {
         Country currentCountry = context.getCurrentCountry();
         if (Objects.requireNonNull(currentCountry.getType()) == CountryType.NEUTRAL) {
-            System.out.println("\nEconomy phase for " + currentCountry.getName());
+            System.out.println("Economy phase for " + currentCountry.getName());
             currentCountry.manageEconomy(currentCountry);
         }
 

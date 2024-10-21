@@ -28,8 +28,7 @@ public class Economy implements IEconomy {
         moneys.put(targetCountry, money);
     }
     public void calculateIncome() {
-        int income = calculateEconomicPoints() * DUCAT_VALUE;
-        money  += income;// Income calculation based on updated economic points
+        int income = calculateEconomicPoints() * DUCAT_VALUE; // Income calculation based on updated economic points
         System.out.println("Income calculated: " + income + " ducats.");
     }
 

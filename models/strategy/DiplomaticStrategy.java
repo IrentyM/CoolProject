@@ -6,8 +6,8 @@ import models.game.Game;
 public class DiplomaticStrategy implements  AIActionStrategy {
     @Override
     public void executeAction(Country country, Game game) {
-        System.out.println( "\n" + country.getName() + " is focusing on diplomacy with all countries.");
-        country.getEconomy().calculateIncome();
+        System.out.println(country.getName() + " is focusing on diplomacy with all countries.");
+
         // 1. Check diplomatic relations with all countries in the game
         for (Country otherCountry : game.getAllCountries()) {
             if (otherCountry == country) continue; // Skip the AI's own country
