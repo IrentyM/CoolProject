@@ -1,5 +1,6 @@
 package models.factory;
 
+import models.country.Country;
 import models.general.IRegion;
 
 public abstract class Soldier {
@@ -7,6 +8,7 @@ public abstract class Soldier {
     protected int strength;
     protected int cost;
     protected IRegion currentRegion;
+    protected Country country;
 
     public String getType() {
         return type;

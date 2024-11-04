@@ -8,6 +8,7 @@ public class EconomicStrategy implements  AIActionStrategy {
     public void executeAction(Country country, Game game) {
         System.out.println("\n" +  country.getName() + " is focusing on economic growth.");
         country.getEconomy().calculateIncome();
+        country.getMilitary().addRecruits();
         // 1. Invest in regional development
 //        Region lowestRegion = findLowestDevelopmentRegion(country);
 //        if (lowestRegion != null && country.canUpgradeRegion(lowestRegion)) {

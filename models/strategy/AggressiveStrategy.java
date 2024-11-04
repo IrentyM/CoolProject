@@ -16,11 +16,14 @@ public class AggressiveStrategy implements  AIActionStrategy {
         // 1. Recruit soldiers if possible
         if (country.getMilitary().canRecruitSoldiers()) {
             List<IRegion> regions = myCountry.getRegions();
-            IRegion selectedRegion = regions.get(1);
-            int recruits = country.getMilitary().recruitSoldier("infantry",100,selectedRegion); // Method to recruit based on available resources
-            System.out.println(country.getName() + " recruits " + recruits + " soldiers.");
+            IRegion selectedRegion = regions.getFirst();
+            int count = 200;
+            selectedRegion.addSoldiers("infantry",count,false);
+            // Method to recruit based on available resources
+            System.out.println(country.getName() + " recruits " + count + " soldiers.");
         }
         country.getEconomy().calculateIncome();
+        country.getMilitary().addRecruits();
 
         // 2. Find a weak neighboring country to attack
 //        Country weakestNeighbor = findWeakestNeighbor(country, game);

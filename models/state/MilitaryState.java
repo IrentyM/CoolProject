@@ -16,6 +16,7 @@ class MilitaryState implements TurnState {
             System.out.println("\nMilitary phase for " + currentCountry.getName());
             currentCountry.manageMilitary(currentCountry, allCountries);
         }
+        currentCountry.getMilitary().addRecruits();
     }
 
     @Override

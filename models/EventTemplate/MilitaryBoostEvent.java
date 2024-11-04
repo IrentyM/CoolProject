@@ -21,6 +21,7 @@ public class MilitaryBoostEvent extends GameEvent {
         IRegion selectedRegion = regions.get(1);
         System.out.println(country.getName() + " receives an Military boost.");
         String type = "cavalry";
-        country.getMilitary().recruitSoldier(type,200,selectedRegion);  // Boost the economy
+        selectedRegion.addSoldiers(type,200, false);
+        // Boost the economy
     }
 }

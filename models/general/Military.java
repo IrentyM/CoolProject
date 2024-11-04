@@ -25,15 +25,19 @@ public class Military implements IMilitary {
         this.army = new ArrayList<>();
         this.soldierFactory = new SoldierFactory(); // Factory for soldier creation
     }
-
-    public int recruitSoldier(String type, int amount, IRegion region) {
-        Soldier newSoldier = soldierFactory.createSoldier(type, amount, region);
+    public void addRecruits() {
+        int recruitsToAdd = militaryPoints * RECRUITS_PER_MILITARY_POINT;
+        recruits += recruitsToAdd;
+        System.out.println(recruitsToAdd + " recruits added. Total recruits: " + recruits);
+    }
+    public int recruitSoldier(String type, int amount, IRegion region,Country country) {
+        Soldier newSoldier = soldierFactory.createSoldier(type, amount, region,country);
         if (recruits >= newSoldier.getCost()) {
             recruits -= newSoldier.getCost();
             for (int i = 0; i < amount; i++) {
                 army.add(newSoldier); // Add the soldiers to the army
             }
-            region.addSoldiers(type,amount);
+            region.addSoldiers(type,amount,false);
             System.out.println(amount + " " + newSoldier.getType() + "(s) recruited in" + region.getName());
         } else {
             System.out.println("Not enough recruits to create " + newSoldier.getType());
