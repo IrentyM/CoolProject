@@ -21,6 +21,16 @@ public class Country {
     private List<IRegion> regions;
     private Scanner scanner;
 
+    BuildingFactory castleFactory = new CastleFactory();
+    IBuilding castle = castleFactory.createBuilding();
+    BuildingFactory farmFactory = new FarmFactory();
+    IBuilding farm = farmFactory.createBuilding();
+    BuildingFactory marketFactory = new MarketFactory();
+    IBuilding market = marketFactory.createBuilding();
+    Expression addFarmIncome = new AddIncomeToBuildingExpression(farm);
+    Expression addMarketIncome = new AddIncomeToBuildingExpression(market);
+    Expression addCastleIncome = new AddIncomeToBuildingExpression(castle);
+
     // Constructor is now private to enforce Factory Method usage
     private Country(String name, ILeader leader, IEconomy economy, IMilitary military, List<IRegion> regions,CountryType type) {
         this.name = name;
@@ -300,112 +310,44 @@ public class Country {
 
 
     public void manageEconomy(Country myCountry) {
+        int castleResult = addCastleIncome.interpret();
+        int marketResult = addMarketIncome.interpret();
+        int farmResult = addFarmIncome.interpret();
+
         Scanner scanner = new Scanner(System.in);
-
-        BuildingFactory castleFactory = new CastleFactory();
-        IBuilding castle = castleFactory.createBuilding();
-        castle.addMoney(20); // Adding money to the castle
-
-        BuildingFactory farmFactory = new FarmFactory();
-        IBuilding farm = farmFactory.createBuilding();
-        farm.addMoney(10); // Adding money to the farm
-
-        BuildingFactory marketFactory = new MarketFactory();
-        IBuilding market = marketFactory.createBuilding();
-
+        // Adding money to the market
         System.out.println("Manage Economy of a Country:");
         myCountry.getEconomy().calculateIncome(); // Calculating income
         System.out.println("Current Money: " + myCountry.getEconomy().getMoney(myCountry) + " ducats");
 
         System.out.println("\nManage Buildings of a Country:");
         System.out.println("1. Adding money to the building");
-        System.out.println("2. Take money from buildings");
+        System.out.println("2. Take Income from buildings");
         System.out.println("3. Exit");
         int choice = scanner.nextInt();
 
         switch (choice) {
             case 1:
-                System.out.println("Select building to add money:");
-                System.out.println("1. Castle");
-                System.out.println("2. Farm");
-                System.out.println("3. Market");
-                int buildingChoice = scanner.nextInt();
                 System.out.println("Enter amount to add:");
                 int amountToAdd = scanner.nextInt();
-
-                switch (buildingChoice) {
-                    case 1:
-                        castle.addMoney(amountToAdd);
-                        myCountry.getEconomy().spentMoney(amountToAdd);
-                        System.out.println(amountToAdd + " ducats added to Castle.");
-                        break;
-                    case 2:
-                        farm.addMoney(amountToAdd);
-                        myCountry.getEconomy().spentMoney(amountToAdd);
-                        System.out.println(amountToAdd + " ducats added to Farm.");
-                        break;
-                    case 3:
-                        market.addMoney(amountToAdd);
-                        myCountry.getEconomy().spentMoney(amountToAdd);
-                        System.out.println(amountToAdd + " ducats added to Market.");
-                        break;
-                    default:
-                        System.out.println("Invalid building choice.");
-                        break;
-                }
-                break;
+                myCountry.getEconomy().subtractMoney(amountToAdd / 3);
+                castle.addMoneytoBuilding(amountToAdd / 3);
+                market.addMoneytoBuilding(amountToAdd / 3);
+                farm.addMoneytoBuilding(amountToAdd / 3);
 
             case 2:
-                System.out.println("Select building to take money from:");
-                System.out.println("1. Castle");
-                System.out.println("2. Farm");
-                System.out.println("3. Market");
-                buildingChoice = scanner.nextInt();
-                System.out.println("Enter amount to take:");
-                int amountToTake = scanner.nextInt();
-
-                switch (buildingChoice) {
-                    case 1:
-                        if (castle.getIncome() >= amountToTake) {
-                            castle.addMoney(-amountToTake); // We extract money
-                            System.out.println(amountToTake + " ducats taken from Castle.");
-                            myCountry.getEconomy().addMoney(amountToTake);
-                        } else {
-                            System.out.println("Not enough money in Castle.");
-                        }
-                        break;
-                    case 2:
-                        if (farm.getIncome() >= amountToTake) {
-                            farm.addMoney(-amountToTake); // We extract money
-                            System.out.println(amountToTake + " ducats taken from Farm.");
-                            myCountry.getEconomy().addMoney(amountToTake);
-                        } else {
-                            System.out.println("Not enough money in Farm.");
-                        }
-                        break;
-                    case 3:
-                        if (market.getIncome() >= amountToTake) {
-                            market.addMoney(-amountToTake); // We extract money
-                            System.out.println(amountToTake + " ducats taken from Market.");
-                            myCountry.getEconomy().addMoney(amountToTake);
-                        } else {
-                            System.out.println("Not enough money in Market.");
-                        }
-                        break;
-                    default:
-                        System.out.println("Invalid building choice.");
-                        break;
-                }
-                break;
-
+                myCountry.getEconomy().addMoney(castle.getIncome()+market.getIncome()+farm.getIncome());
             case 3:
                 System.out.println("Exiting...");
                 break;
-
             default:
                 System.out.println("Invalid choice, please try again.");
                 break;
+
+
         }
+
+        System.out.println("Current Money: " + myCountry.getEconomy().getMoney(myCountry) + " ducats");
     }
     public void accept(Visitor visitor) {
         visitor.visit(this);
